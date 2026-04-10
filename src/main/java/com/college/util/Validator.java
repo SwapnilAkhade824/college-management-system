@@ -1,36 +1,34 @@
 package com.college.util;
 
-/**
- * ============================================
- * CLASS: Validator
- * ============================================
- *
- * PURPOSE:
- * Provides validation methods for user input.
- *
- * USED BY:
- * - Controllers
- * - Dialogs (forms)
- *
- * METHODS TO IMPLEMENT:
- *
- * 1. isValidEmail(String email) → boolean
- * 2. isValidPhone(String phone) → boolean
- * 3. isNotEmpty(String value) → boolean
- *
- * ============================================
- */
-public class Validator {
+public final class Validator {
 
-    public static boolean isValidEmail(String email) {
-        return false;
+    private Validator() {}
+
+    public static boolean notEmpty(String s) {
+        return s != null && !s.trim().isEmpty();
     }
 
-    public static boolean isValidPhone(String phone) {
-        return false;
+    public static boolean validUsername(String s) {
+        return notEmpty(s) && s.trim().length() >= 3;
     }
 
-    public static boolean isNotEmpty(String value) {
-        return false;
+    public static boolean validPassword(String s) {
+        return notEmpty(s) && s.length() >= 6;
+    }
+
+    public static boolean passwordsMatch(String p1, String p2) {
+        return p1 != null && p1.equals(p2);
+    }
+
+    public static boolean validEmail(String s) {
+        return notEmpty(s) && s.contains("@") && s.contains(".");
+    }
+
+    public static boolean validPhone(String s) {
+        return notEmpty(s) && s.trim().matches("\\d{10}");
+    }
+
+    public static boolean validPasswordChange(String oldPass, String newPass, String confirm) {
+        return notEmpty(oldPass) && validPassword(newPass) && passwordsMatch(newPass, confirm);
     }
 }

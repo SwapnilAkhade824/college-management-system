@@ -1,77 +1,89 @@
 package com.college.dao.user;
 
-import java.util.List;
+import com.college.core.DBConnection;
 import com.college.model.user.User;
+import com.college.util.DemoData;
 
-/**
- * ============================================
- * CLASS: UserDAO
- * ============================================
- *
- * PURPOSE:
- * Handles database operations for User table.
- *
- * RESPONSIBILITIES:
- * - Execute SQL queries
- * - Map ResultSet to User
- *
- * USED BY:
- * - Controller layer
- *
- * DEPENDS ON:
- * - DBConnection
- *
- * RULES:
- * - No business logic
- * - Only database interaction
- *
- * METHODS TO IMPLEMENT:
- *
- * ============================================
- */
+import java.sql.*;
+import java.util.*;
+
 public class UserDAO {
 
-    /**
-     * Insert new record
-     * @param data (User object)
-     * @return boolean (true if success)
-     */
-    public boolean insert(User data) {
-        return false;
+    public User findByUsername(String username) {
+        if (DBConnection.isDemoMode()) {
+            User d = DemoData.getUser();
+            return d.getUsername().equals(username) ? d : null;
+        }
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return null;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT * FROM Users WHERE username=? AND status='ACTIVE'")) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return map(rs);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
     }
 
-    /**
-     * Update existing record
-     * @param data (User object)
-     * @return boolean
-     */
-    public boolean update(User data) {
-        return false;
+    public boolean insert(User u) {
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "INSERT INTO Users(username,password,role,status) VALUES(?,?,?,?)")) {
+            ps.setString(1, u.getUsername()); ps.setString(2, u.getPassword());
+            ps.setString(3, u.getRole());     ps.setString(4, "INACTIVE");
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
-    /**
-     * Soft delete record (if applicable)
-     * @param id (primary key)
-     * @return boolean
-     */
+    public boolean update(User u) {
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE Users SET password=?,status=? WHERE user_id=?")) {
+            ps.setString(1, u.getPassword()); ps.setString(2, u.getStatus());
+            ps.setInt(3, u.getUserId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
+    }
+
     public boolean delete(int id) {
-        return false;
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE Users SET status='INACTIVE' WHERE user_id=?")) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
-    /**
-     * Fetch record by ID
-     * @param id
-     * @return User
-     */
     public User findById(int id) {
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return null;
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM Users WHERE user_id=?")) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return map(rs);
+        } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
 
-    /**
-     * Fetch all records
-     * @return List<User>
-     */
     public List<User> findAll() {
-        return null;
+        List<User> list = new ArrayList<>();
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return list;
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT * FROM Users")) {
+            while (rs.next()) list.add(map(rs));
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    private User map(ResultSet rs) throws SQLException {
+        User u = new User();
+        u.setUserId(rs.getInt("user_id")); u.setUsername(rs.getString("username"));
+        u.setPassword(rs.getString("password")); u.setRole(rs.getString("role"));
+        u.setStatus(rs.getString("status"));
+        return u;
     }
 }

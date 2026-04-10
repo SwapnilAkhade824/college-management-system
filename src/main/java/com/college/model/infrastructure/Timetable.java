@@ -1,45 +1,31 @@
 package com.college.model.infrastructure;
 
-/**
- * ============================================
- * CLASS: Timetable
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Timetable' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
+import java.sql.Time;
+
 public class Timetable {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    timetableId;
+    private int    subjectId;
+    private int    facultyId;
+    private int    roomId;
+    private String day; // MONDAY ... SUNDAY
+    private Time   startTime;
+    private Time   endTime;
 
     public Timetable() {}
 
-    // TODO: Parameterized constructor
+    public int    getTimetableId() { return timetableId; }
+    public int    getSubjectId()   { return subjectId; }
+    public int    getFacultyId()   { return facultyId; }
+    public int    getRoomId()      { return roomId; }
+    public String getDay()         { return day; }
+    public Time   getStartTime()   { return startTime; }
+    public Time   getEndTime()     { return endTime; }
 
-    // TODO: Getters and Setters
-
+    public void setTimetableId(int v)  { timetableId = v; }
+    public void setSubjectId(int v)    { subjectId   = v; }
+    public void setFacultyId(int v)    { facultyId   = v; }
+    public void setRoomId(int v)       { roomId      = v; }
+    public void setDay(String v)       { day         = v; }
+    public void setStartTime(Time v)   { startTime   = v; }
+    public void setEndTime(Time v)     { endTime     = v; }
 }

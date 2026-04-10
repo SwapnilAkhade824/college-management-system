@@ -1,45 +1,32 @@
 package com.college.model.system;
 
-/**
- * ============================================
- * CLASS: Notification
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Notification' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
+import java.util.Date;
+
 public class Notification {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int     notificationId;
+    private int     userId;
+    private String  message;
+    private String  type;    // "NOTIFICATION" | "ALERT"
+    private boolean isRead;
+    private Date    createdAt;
 
     public Notification() {}
+    public Notification(int id, int userId, String message, String type, boolean read, Date at){
+        this.notificationId = id; this.userId = userId; this.message = message;
+        this.type = type; this.isRead = read; this.createdAt = at;
+    }
 
-    // TODO: Parameterized constructor
+    public int     getNotificationId() { return notificationId; }
+    public int     getUserId()         { return userId; }
+    public String  getMessage()        { return message; }
+    public String  getType()           { return type; }
+    public boolean isRead()            { return isRead; }
+    public Date    getCreatedAt()      { return createdAt; }
 
-    // TODO: Getters and Setters
-
+    public void setNotificationId(int v) { notificationId = v; }
+    public void setUserId(int v)         { userId         = v; }
+    public void setMessage(String v)     { message        = v; }
+    public void setType(String v)        { type           = v; }
+    public void setRead(boolean v)       { isRead         = v; }
+    public void setCreatedAt(Date v)     { createdAt      = v; }
 }

@@ -1,51 +1,43 @@
 package com.college.core;
 
 /**
- * ============================================
- * CLASS: SessionManager
- * ============================================
- *
- * PURPOSE:
- * Stores information about currently logged-in user.
- *
- * RESPONSIBILITIES:
- * - Maintain session state
- * - Provide user role access
- *
- * USED BY:
- * - Controllers
- * - NavigationManager
- *
- * FIELDS:
- * - currentUserId
- * - currentUserRole
- *
- * METHODS TO IMPLEMENT:
- *
- * 1. setUser(int userId, String role)
- *    @return void
- *
- * 2. getUserId()
- *    @return int
- *
- * 3. getUserRole()
- *    @return String
- *
- * 4. clearSession()
- *    @return void
- *
- * ============================================
+ * Stores information about the currently logged-in user.
+ * Stateless singleton — all fields are static.
  */
-public class SessionManager {
+public final class SessionManager {
 
-    private static int currentUserId;
-    private static String currentUserRole;
+    private SessionManager() {}
 
-    public static void setUser(int userId, String role) {}
+    private static int    userId;
+    private static String userRole;
+    private static String username;
+    private static String displayName;
+    private static int    studentId;
+    private static int    courseId;
 
-    public static int getUserId() { return 0; }
+    public static void setUser(int id, String role, String uname, String name) {
+        userId      = id;
+        userRole    = role;
+        username    = uname;
+        displayName = name;
+    }
 
-    public static String getUserRole() { return null; }
+    public static void setStudentId(int id) { studentId = id; }
+    public static void setCourseId(int id)  { courseId  = id; }
 
-    public static void clearSession() {}
+    public static int    getUserId()      { return userId; }
+    public static String getUserRole()    { return userRole; }
+    public static String getUsername()    { return username; }
+    public static String getDisplayName() { return displayName; }
+    public static int    getStudentId()   { return studentId; }
+    public static int    getCourseId()    { return courseId; }
+
+    public static boolean isStudent() { return "STUDENT".equalsIgnoreCase(userRole); }
+    public static boolean isFaculty() { return "FACULTY".equalsIgnoreCase(userRole); }
+    public static boolean isAdmin()   { return "ADMIN".equalsIgnoreCase(userRole); }
+
+    public static void clear() {
+        userId = 0; userRole = null; username = null;
+        displayName = null; studentId = 0; courseId = 0;
+    }
 }

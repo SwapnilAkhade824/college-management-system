@@ -1,45 +1,23 @@
 package com.college.model.exam;
 
-/**
- * ============================================
- * CLASS: Grade
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Grade' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
 public class Grade {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    gradeId;
+    private String gradeName;
+    private int    minMarks;
+    private int    maxMarks;
 
     public Grade() {}
+    public Grade(int id, String name, int min, int max) {
+        this.gradeId = id; this.gradeName = name; this.minMarks = min; this.maxMarks = max;
+    }
 
-    // TODO: Parameterized constructor
+    public int    getGradeId()   { return gradeId; }
+    public String getGradeName() { return gradeName; }
+    public int    getMinMarks()  { return minMarks; }
+    public int    getMaxMarks()  { return maxMarks; }
 
-    // TODO: Getters and Setters
-
+    public void setGradeId(int v)    { gradeId   = v; }
+    public void setGradeName(String v){ gradeName = v; }
+    public void setMinMarks(int v)   { minMarks  = v; }
+    public void setMaxMarks(int v)   { maxMarks  = v; }
 }

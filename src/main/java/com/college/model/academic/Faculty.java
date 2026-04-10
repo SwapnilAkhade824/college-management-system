@@ -1,45 +1,35 @@
 package com.college.model.academic;
 
-/**
- * ============================================
- * CLASS: Faculty
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Faculty' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
+import java.util.Date;
+
 public class Faculty {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    facultyId;
+    private int    userId;
+    private String firstName;
+    private String lastName;
+    private String designation;
+    private int    deptId;
+    private Date   dateOfJoining;
+    private String status;
 
     public Faculty() {}
 
-    // TODO: Parameterized constructor
+    public int    getFacultyId()    { return facultyId; }
+    public int    getUserId()       { return userId; }
+    public String getFirstName()    { return firstName; }
+    public String getLastName()     { return lastName; }
+    public String getFullName()     { return firstName + " " + lastName; }
+    public String getDesignation()  { return designation; }
+    public int    getDeptId()       { return deptId; }
+    public Date   getDateOfJoining(){ return dateOfJoining; }
+    public String getStatus()       { return status; }
 
-    // TODO: Getters and Setters
-
+    public void setFacultyId(int v)       { facultyId     = v; }
+    public void setUserId(int v)          { userId        = v; }
+    public void setFirstName(String v)    { firstName     = v; }
+    public void setLastName(String v)     { lastName      = v; }
+    public void setDesignation(String v)  { designation   = v; }
+    public void setDeptId(int v)          { deptId        = v; }
+    public void setDateOfJoining(Date v)  { dateOfJoining = v; }
+    public void setStatus(String v)       { status        = v; }
 }

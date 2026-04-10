@@ -1,73 +1,31 @@
 package com.college.controller;
 
-import java.util.List;
+import com.college.core.DBConnection;
+import com.college.util.DemoData;
 
-/**
- * ============================================
- * CLASS: AttendanceController
- * ============================================
- *
- * PURPOSE:
- * This controller handles all business logic related to Attendance.
- * It acts as a bridge between UI (Panels) and DAO layer.
- *
- * RESPONSIBILITIES:
- * - Validate user input
- * - Call DAO methods
- * - Process data before sending to UI
- *
- * USED BY:
- * - AttendancePanel (UI)
- *
- * DEPENDS ON:
- * - AttendanceDAO
- * - Attendance model
- *
- * ============================================
- */
 public class AttendanceController {
 
-    /**
-     * Create/Add Attendance
-     * @param data (Attendance object)
-     * @return boolean (true if success, false otherwise)
-     */
-    public boolean addAttendance(Attendance data) {
-        return false;
+    public String[] getColumns() { return DemoData.attendanceCols(); }
+
+    public Object[][] getAttendanceData(String subjectFilter, String statusFilter) {
+        if (DBConnection.isDemoMode()) return filter(DemoData.attendanceRows(), subjectFilter, statusFilter);
+        // TODO: DB query with filters
+        return filter(DemoData.attendanceRows(), subjectFilter, statusFilter);
     }
 
-    /**
-     * Update Attendance
-     * @param data (Attendance object with updated values)
-     * @return boolean
-     */
-    public boolean updateAttendance(Attendance data) {
-        return false;
-    }
+    public String[] getSubjectNames() { return DemoData.getSubjectNames(); }
 
-    /**
-     * Soft Delete Attendance
-     * @param id (primary key)
-     * @return boolean
-     */
-    public boolean deleteAttendance(int id) {
-        return false;
-    }
-
-    /**
-     * Get Attendance by ID
-     * @param id
-     * @return Attendance object
-     */
-    public Attendance getAttendanceById(int id) {
-        return null;
-    }
-
-    /**
-     * Get all Attendance records
-     * @return List<Attendance>
-     */
-    public List<Attendance> getAllAttendances() {
-        return null;
+    private Object[][] filter(Object[][] rows, String subject, String status) {
+        if ((subject == null || subject.equals("All Subjects")) &&
+            (status  == null || status.equals("All"))) return rows;
+        java.util.List<Object[]> out = new java.util.ArrayList<>();
+        for (Object[] r : rows) {
+            boolean subMatch = subject == null || subject.equals("All Subjects") ||
+                               r[1].toString().equals(subject);
+            boolean stMatch  = status  == null || status.equals("All") ||
+                               r[2].toString().equalsIgnoreCase(status);
+            if (subMatch && stMatch) out.add(r);
+        }
+        return out.toArray(new Object[0][]);
     }
 }

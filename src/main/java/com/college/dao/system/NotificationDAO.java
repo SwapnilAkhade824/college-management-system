@@ -1,77 +1,60 @@
 package com.college.dao.system;
 
-import java.util.List;
+import com.college.core.DBConnection;
 import com.college.model.system.Notification;
+import com.college.util.DemoData;
 
-/**
- * ============================================
- * CLASS: NotificationDAO
- * ============================================
- *
- * PURPOSE:
- * Handles database operations for Notification table.
- *
- * RESPONSIBILITIES:
- * - Execute SQL queries
- * - Map ResultSet to Notification
- *
- * USED BY:
- * - Controller layer
- *
- * DEPENDS ON:
- * - DBConnection
- *
- * RULES:
- * - No business logic
- * - Only database interaction
- *
- * METHODS TO IMPLEMENT:
- *
- * ============================================
- */
+import java.sql.*;
+import java.util.*;
+
 public class NotificationDAO {
 
-    /**
-     * Insert new record
-     * @param data (Notification object)
-     * @return boolean (true if success)
-     */
-    public boolean insert(Notification data) {
-        return false;
+    public List<Notification> findByUserId(int userId) {
+        if (DBConnection.isDemoMode()) return DemoData.getNotifications();
+        List<Notification> list = new ArrayList<>();
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return DemoData.getNotifications();
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT * FROM Notifications WHERE user_id=? ORDER BY created_at DESC")) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(map(rs));
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list.isEmpty() ? DemoData.getNotifications() : list;
     }
 
-    /**
-     * Update existing record
-     * @param data (Notification object)
-     * @return boolean
-     */
-    public boolean update(Notification data) {
-        return false;
+    public boolean markAllRead(int userId) {
+        if (DBConnection.isDemoMode()) return true;
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE Notifications SET is_read=TRUE WHERE user_id=?")) {
+            ps.setInt(1, userId);
+            return ps.executeUpdate() >= 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
-    /**
-     * Soft delete record (if applicable)
-     * @param id (primary key)
-     * @return boolean
-     */
-    public boolean delete(int id) {
-        return false;
+    public boolean insert(Notification n) {
+        Connection conn = DBConnection.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "INSERT INTO Notifications(user_id,message,type,is_read) VALUES(?,?,?,?)")) {
+            ps.setInt(1,n.getUserId()); ps.setString(2,n.getMessage());
+            ps.setString(3,n.getType()); ps.setBoolean(4,n.isRead());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
-    /**
-     * Fetch record by ID
-     * @param id
-     * @return Notification
-     */
-    public Notification findById(int id) {
-        return null;
-    }
+    public boolean update(Notification n) { return false; }
+    public boolean delete(int id) { return false; }
+    public Notification findById(int id) { return null; }
+    public List<Notification> findAll() { return new ArrayList<>(); }
 
-    /**
-     * Fetch all records
-     * @return List<Notification>
-     */
-    public List<Notification> findAll() {
-        return null;
+    private Notification map(ResultSet rs) throws SQLException {
+        Notification n = new Notification();
+        n.setNotificationId(rs.getInt("notification_id")); n.setUserId(rs.getInt("user_id"));
+        n.setMessage(rs.getString("message")); n.setType(rs.getString("type"));
+        n.setRead(rs.getBoolean("is_read")); n.setCreatedAt(rs.getTimestamp("created_at"));
+        return n;
     }
 }

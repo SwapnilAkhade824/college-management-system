@@ -1,45 +1,23 @@
 package com.college.model.exam;
 
-/**
- * ============================================
- * CLASS: Result
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Result' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
 public class Result {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int resultId;
+    private int examId;
+    private int studentId;
+    private int marksObtained;
+    private int gradeId;
 
     public Result() {}
 
-    // TODO: Parameterized constructor
+    public int getResultId()      { return resultId; }
+    public int getExamId()        { return examId; }
+    public int getStudentId()     { return studentId; }
+    public int getMarksObtained() { return marksObtained; }
+    public int getGradeId()       { return gradeId; }
 
-    // TODO: Getters and Setters
-
+    public void setResultId(int v)      { resultId      = v; }
+    public void setExamId(int v)        { examId        = v; }
+    public void setStudentId(int v)     { studentId     = v; }
+    public void setMarksObtained(int v) { marksObtained = v; }
+    public void setGradeId(int v)       { gradeId       = v; }
 }

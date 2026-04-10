@@ -1,73 +1,32 @@
 package com.college.controller;
 
-import java.util.List;
+import com.college.core.DBConnection;
+import com.college.util.DemoData;
 
-/**
- * ============================================
- * CLASS: PaymentController
- * ============================================
- *
- * PURPOSE:
- * This controller handles all business logic related to Payment.
- * It acts as a bridge between UI (Panels) and DAO layer.
- *
- * RESPONSIBILITIES:
- * - Validate user input
- * - Call DAO methods
- * - Process data before sending to UI
- *
- * USED BY:
- * - PaymentPanel (UI)
- *
- * DEPENDS ON:
- * - PaymentDAO
- * - Payment model
- *
- * ============================================
- */
 public class PaymentController {
 
-    /**
-     * Create/Add Payment
-     * @param data (Payment object)
-     * @return boolean (true if success, false otherwise)
-     */
-    public boolean addPayment(Payment data) {
-        return false;
+    public String[] getColumns() { return DemoData.paymentCols(); }
+
+    public Object[][] getPaymentData(String statusFilter, String typeFilter) {
+        Object[][] all = DBConnection.isDemoMode() ? DemoData.paymentRows() : DemoData.paymentRows();
+        return filter(all, statusFilter, typeFilter);
     }
 
-    /**
-     * Update Payment
-     * @param data (Payment object with updated values)
-     * @return boolean
-     */
-    public boolean updatePayment(Payment data) {
-        return false;
+    private Object[][] filter(Object[][] rows, String status, String type) {
+        if ((status == null || status.equals("All")) &&
+            (type   == null || type.equals("All Modes"))) return rows;
+        java.util.List<Object[]> out = new java.util.ArrayList<>();
+        for (Object[] r : rows) {
+            boolean stMatch = status == null || status.equals("All") ||
+                              r[4].toString().equalsIgnoreCase(status);
+            boolean tyMatch = type   == null || type.equals("All Modes") ||
+                              r[5].toString().equalsIgnoreCase(type);
+            if (stMatch && tyMatch) out.add(r);
+        }
+        return out.toArray(new Object[0][]);
     }
 
-    /**
-     * Soft Delete Payment
-     * @param id (primary key)
-     * @return boolean
-     */
-    public boolean deletePayment(int id) {
-        return false;
-    }
-
-    /**
-     * Get Payment by ID
-     * @param id
-     * @return Payment object
-     */
-    public Payment getPaymentById(int id) {
-        return null;
-    }
-
-    /**
-     * Get all Payment records
-     * @return List<Payment>
-     */
-    public List<Payment> getAllPayments() {
-        return null;
+    public String[] getPaymentModes() {
+        return new String[]{"All Modes", "Online", "DD", "Cash"};
     }
 }

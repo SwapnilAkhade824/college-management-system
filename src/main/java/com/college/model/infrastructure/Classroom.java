@@ -1,45 +1,20 @@
 package com.college.model.infrastructure;
 
-/**
- * ============================================
- * CLASS: Classroom
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Classroom' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
 public class Classroom {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    roomId;
+    private String building;
+    private int    capacity;
 
     public Classroom() {}
+    public Classroom(int id, String building, int capacity) {
+        this.roomId = id; this.building = building; this.capacity = capacity;
+    }
 
-    // TODO: Parameterized constructor
+    public int    getRoomId()   { return roomId; }
+    public String getBuilding() { return building; }
+    public int    getCapacity() { return capacity; }
 
-    // TODO: Getters and Setters
-
+    public void setRoomId(int v)    { roomId    = v; }
+    public void setBuilding(String v){ building = v; }
+    public void setCapacity(int v)  { capacity  = v; }
 }

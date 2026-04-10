@@ -1,73 +1,36 @@
 package com.college.controller;
 
-import java.util.List;
+import com.college.core.SessionManager;
+import com.college.dao.system.NotificationDAO;
+import com.college.model.system.Notification;
+import com.college.util.DemoData;
 
-/**
- * ============================================
- * CLASS: NotificationController
- * ============================================
- *
- * PURPOSE:
- * This controller handles all business logic related to Notification.
- * It acts as a bridge between UI (Panels) and DAO layer.
- *
- * RESPONSIBILITIES:
- * - Validate user input
- * - Call DAO methods
- * - Process data before sending to UI
- *
- * USED BY:
- * - NotificationPanel (UI)
- *
- * DEPENDS ON:
- * - NotificationDAO
- * - Notification model
- *
- * ============================================
- */
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class NotificationController {
 
-    /**
-     * Create/Add Notification
-     * @param data (Notification object)
-     * @return boolean (true if success, false otherwise)
-     */
-    public boolean addNotification(Notification data) {
-        return false;
+    private final NotificationDAO dao = new NotificationDAO();
+
+    public List<Notification> getAll() {
+        return dao.findByUserId(SessionManager.getUserId());
     }
 
-    /**
-     * Update Notification
-     * @param data (Notification object with updated values)
-     * @return boolean
-     */
-    public boolean updateNotification(Notification data) {
-        return false;
+    public List<Notification> getFiltered(boolean notifOnly, boolean alertOnly) {
+        List<Notification> all = getAll();
+        if (!notifOnly && !alertOnly) return all;
+        return all.stream().filter(n -> {
+            if (notifOnly && "NOTIFICATION".equals(n.getType())) return true;
+            if (alertOnly  && "ALERT".equals(n.getType()))        return true;
+            return false;
+        }).collect(Collectors.toList());
     }
 
-    /**
-     * Soft Delete Notification
-     * @param id (primary key)
-     * @return boolean
-     */
-    public boolean deleteNotification(int id) {
-        return false;
+    public int getUnreadCount() {
+        return (int) getAll().stream().filter(n -> !n.isRead()).count();
     }
 
-    /**
-     * Get Notification by ID
-     * @param id
-     * @return Notification object
-     */
-    public Notification getNotificationById(int id) {
-        return null;
-    }
-
-    /**
-     * Get all Notification records
-     * @return List<Notification>
-     */
-    public List<Notification> getAllNotifications() {
-        return null;
+    public boolean markAllRead() {
+        return dao.markAllRead(SessionManager.getUserId());
     }
 }

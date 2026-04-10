@@ -1,45 +1,20 @@
 package com.college.model.academic;
 
-/**
- * ============================================
- * CLASS: FacultySubject
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'FacultySubject' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
 public class FacultySubject {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int facultyId;
+    private int subjectId;
+    private int semester;
 
     public FacultySubject() {}
+    public FacultySubject(int facultyId, int subjectId, int semester) {
+        this.facultyId = facultyId; this.subjectId = subjectId; this.semester = semester;
+    }
 
-    // TODO: Parameterized constructor
+    public int getFacultyId() { return facultyId; }
+    public int getSubjectId() { return subjectId; }
+    public int getSemester()  { return semester; }
 
-    // TODO: Getters and Setters
-
+    public void setFacultyId(int v) { facultyId = v; }
+    public void setSubjectId(int v) { subjectId = v; }
+    public void setSemester(int v)  { semester  = v; }
 }

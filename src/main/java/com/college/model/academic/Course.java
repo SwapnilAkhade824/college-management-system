@@ -1,45 +1,29 @@
 package com.college.model.academic;
 
-/**
- * ============================================
- * CLASS: Course
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Course' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
 public class Course {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    courseId;
+    private String courseName;
+    private int    deptId;
+    private int    durationYears;
+    private int    totalCredits;
 
     public Course() {}
+    public Course(int id, String name, int deptId, int dur, int credits) {
+        this.courseId = id; this.courseName = name;
+        this.deptId = deptId; this.durationYears = dur; this.totalCredits = credits;
+    }
 
-    // TODO: Parameterized constructor
+    public int    getCourseId()      { return courseId; }
+    public String getCourseName()    { return courseName; }
+    public int    getDeptId()        { return deptId; }
+    public int    getDurationYears() { return durationYears; }
+    public int    getTotalCredits()  { return totalCredits; }
 
-    // TODO: Getters and Setters
+    public void setCourseId(int v)       { courseId      = v; }
+    public void setCourseName(String v)  { courseName    = v; }
+    public void setDeptId(int v)         { deptId        = v; }
+    public void setDurationYears(int v)  { durationYears = v; }
+    public void setTotalCredits(int v)   { totalCredits  = v; }
 
+    @Override public String toString() { return courseName; }
 }

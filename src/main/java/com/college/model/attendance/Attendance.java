@@ -1,45 +1,28 @@
 package com.college.model.attendance;
 
-/**
- * ============================================
- * CLASS: Attendance
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Attendance' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
+import java.util.Date;
+
 public class Attendance {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    attendanceId;
+    private int    studentId;
+    private int    subjectId;
+    private int    facultyId;
+    private Date   date;
+    private String status; // PRESENT | ABSENT
 
     public Attendance() {}
 
-    // TODO: Parameterized constructor
+    public int    getAttendanceId() { return attendanceId; }
+    public int    getStudentId()    { return studentId; }
+    public int    getSubjectId()    { return subjectId; }
+    public int    getFacultyId()    { return facultyId; }
+    public Date   getDate()         { return date; }
+    public String getStatus()       { return status; }
 
-    // TODO: Getters and Setters
-
+    public void setAttendanceId(int v) { attendanceId = v; }
+    public void setStudentId(int v)    { studentId    = v; }
+    public void setSubjectId(int v)    { subjectId    = v; }
+    public void setFacultyId(int v)    { facultyId    = v; }
+    public void setDate(Date v)        { date         = v; }
+    public void setStatus(String v)    { status       = v; }
 }

@@ -1,38 +1,94 @@
 package com.college.view.panels;
 
+import com.college.controller.AttendanceController;
+import com.college.core.NavigationManager;
+import com.college.core.Refreshable;
+import com.college.util.Constants;
+import com.college.util.UITheme;
+import com.college.view.components.*;
+
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 
 /**
- * ============================================
- * CLASS: AttendancePanel
- * ============================================
- *
- * PURPOSE:
- * Represents a main screen of the application.
- *
- * RESPONSIBILITIES:
- * - Display data (tables, labels)
- * - Take user input
- * - Call controller methods
- *
- * USED BY:
- * - NavigationManager
- *
- * DEPENDS ON:
- * - Controller layer
- *
- * ============================================
+ * Attendance screen: subheader "Attendance:", Filter button, Back button, StyledTable.
  */
-public class AttendancePanel extends JPanel {
+public class AttendancePanel extends JPanel implements Refreshable {
+
+    private final AttendanceController ctrl    = new AttendanceController();
+    private final Topbar               topbar  = new Topbar();
+    private       StyledTable          table;
+    private String filterSubject = null, filterStatus = null;
 
     public AttendancePanel() {
-        initUI();
+        setBackground(Constants.BG);
+        setLayout(new BorderLayout());
+        add(topbar, BorderLayout.NORTH);
+        add(buildBody(), BorderLayout.CENTER);
     }
 
-    private void initUI() {
-        setLayout(new BorderLayout());
+    private JPanel buildBody() {
+        JPanel outer = new JPanel(new BorderLayout());
+        outer.setBackground(Constants.BG);
 
-        // TODO: Add components (tables, forms, buttons)
+        // Sub-header
+        JPanel sub = new JPanel(new BorderLayout());
+        sub.setBackground(Constants.BG);
+        sub.setPreferredSize(new Dimension(0, Constants.SUB_H));
+        sub.setBorder(new MatteBorder(0, 0, Constants.STROKE, 0, Color.BLACK));
+
+        JLabel title = new JLabel("Attendance:");
+        title.setFont(UITheme.bold(28f));
+        title.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 0));
+        sub.add(title, BorderLayout.WEST);
+
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
+        right.setOpaque(false);
+
+        // Filter button
+        JButton filterBtn = new JButton("⊞ Filter");
+        filterBtn.setFont(UITheme.bold(15f));
+        filterBtn.setBackground(Constants.CARD_COLOR);
+        filterBtn.setBorder(BorderFactory.createLineBorder(new Color(0x999999), 1, true));
+        filterBtn.setFocusPainted(false);
+        filterBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        BackButton back = new BackButton();
+        back.addActionListener(e -> NavigationManager.getInstance().navigateBack());
+
+        right.add(filterBtn);
+        right.add(back);
+        sub.add(right, BorderLayout.EAST);
+        outer.add(sub, BorderLayout.NORTH);
+
+        // Table
+        table = new StyledTable(ctrl.getColumns(), ctrl.getAttendanceData(null, null));
+        table.setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
+        outer.add(table, BorderLayout.CENTER);
+
+        // Filter popup popup
+        FilterPopup filterPopup = new FilterPopup(
+            "PRESENT", "ABSENT", ctrl.getSubjectNames(),
+            (status, subject) -> {
+                filterStatus  = status;
+                filterSubject = subject;
+                table.setData(ctrl.getColumns(), ctrl.getAttendanceData(filterSubject, filterStatus));
+            });
+
+        filterBtn.addActionListener(e -> {
+            JPopupMenu pm = new JPopupMenu();
+            pm.setLayout(new BorderLayout());
+            pm.add(filterPopup, BorderLayout.CENTER);
+            pm.show(filterBtn, 0, filterBtn.getHeight());
+        });
+
+        return outer;
+    }
+
+    @Override
+    public void refresh() {
+        topbar.setName(new com.college.controller.DashboardController().getWelcomeName());
+        table.setData(ctrl.getColumns(), ctrl.getAttendanceData(filterSubject, filterStatus));
     }
 }

@@ -1,45 +1,22 @@
 package com.college.model.finance;
 
-/**
- * ============================================
- * CLASS: Fees
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Fees' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
+import java.math.BigDecimal;
+
 public class Fees {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int        feeId;
+    private int        courseId;
+    private int        semester;
+    private BigDecimal amount;
 
     public Fees() {}
 
-    // TODO: Parameterized constructor
+    public int        getFeeId()   { return feeId; }
+    public int        getCourseId(){ return courseId; }
+    public int        getSemester(){ return semester; }
+    public BigDecimal getAmount()  { return amount; }
 
-    // TODO: Getters and Setters
-
+    public void setFeeId(int v)        { feeId    = v; }
+    public void setCourseId(int v)     { courseId = v; }
+    public void setSemester(int v)     { semester = v; }
+    public void setAmount(BigDecimal v){ amount   = v; }
 }

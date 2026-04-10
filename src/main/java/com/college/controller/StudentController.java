@@ -1,73 +1,45 @@
 package com.college.controller;
 
-import java.util.List;
+import com.college.core.DBConnection;
+import com.college.core.SessionManager;
+import com.college.dao.academic.StudentDAO;
+import com.college.model.academic.Student;
+import com.college.util.DemoData;
 
 /**
- * ============================================
- * CLASS: StudentController
- * ============================================
- *
- * PURPOSE:
- * This controller handles all business logic related to Student.
- * It acts as a bridge between UI (Panels) and DAO layer.
- *
- * RESPONSIBILITIES:
- * - Validate user input
- * - Call DAO methods
- * - Process data before sending to UI
- *
- * USED BY:
- * - StudentPanel (UI)
- *
- * DEPENDS ON:
- * - StudentDAO
- * - Student model
- *
- * ============================================
+ * Provides student profile data and computed stats (CGPA, attendance).
  */
 public class StudentController {
 
-    /**
-     * Create/Add Student
-     * @param data (Student object)
-     * @return boolean (true if success, false otherwise)
-     */
-    public boolean addStudent(Student data) {
-        return false;
+    private final StudentDAO dao = new StudentDAO();
+
+    public Student getStudent() {
+        if (DBConnection.isDemoMode()) return DemoData.getStudent();
+        return dao.findById(SessionManager.getStudentId());
     }
 
-    /**
-     * Update Student
-     * @param data (Student object with updated values)
-     * @return boolean
-     */
-    public boolean updateStudent(Student data) {
-        return false;
+    /** Returns CGPA computed from results, or demo value. */
+    public double getCGPA() {
+        if (DBConnection.isDemoMode()) return DemoData.getCGPA();
+        // Real implementation: query Result join Exam, average marks/maxMarks * 10
+        // TODO: replace stub once DB connected
+        return DemoData.getCGPA();
     }
 
-    /**
-     * Soft Delete Student
-     * @param id (primary key)
-     * @return boolean
-     */
-    public boolean deleteStudent(int id) {
-        return false;
+    /** Returns attendance percentage for the student. */
+    public double getAttendancePct() {
+        if (DBConnection.isDemoMode()) return DemoData.getAttendancePct();
+        // TODO: real query
+        return DemoData.getAttendancePct();
     }
 
-    /**
-     * Get Student by ID
-     * @param id
-     * @return Student object
-     */
-    public Student getStudentById(int id) {
-        return null;
-    }
-
-    /**
-     * Get all Student records
-     * @return List<Student>
-     */
-    public List<Student> getAllStudents() {
-        return null;
-    }
+    // --- Detail view helpers ---
+    public String getCourseName()  { return DBConnection.isDemoMode() ? DemoData.getCourse()      : "--"; }
+    public String getDeptName()    { return DBConnection.isDemoMode() ? DemoData.getDept()         : "--"; }
+    public String getYearLabel()   { return DBConnection.isDemoMode() ? DemoData.getYear()         : "--"; }
+    public String getSemLabel()    { return DBConnection.isDemoMode() ? DemoData.getSemester()     : "--"; }
+    public String getBranch()      { return DBConnection.isDemoMode() ? DemoData.getBranch()       : "--"; }
+    public int    getBacklog()     { return DBConnection.isDemoMode() ? DemoData.getBacklog()      : 0;   }
+    public String getFacultyName() { return DBConnection.isDemoMode() ? DemoData.getFacultyName()  : "--"; }
+    public String getSubjectList() { return DBConnection.isDemoMode() ? DemoData.getSubjectList()  : "--"; }
 }

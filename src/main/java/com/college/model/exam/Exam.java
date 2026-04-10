@@ -1,45 +1,25 @@
 package com.college.model.exam;
 
-/**
- * ============================================
- * CLASS: Exam
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Exam' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
+import java.util.Date;
+
 public class Exam {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    examId;
+    private int    subjectId;
+    private String examType; // MIDTERM | FINAL | QUIZ
+    private Date   examDate;
+    private int    maxMarks;
 
     public Exam() {}
 
-    // TODO: Parameterized constructor
+    public int    getExamId()    { return examId; }
+    public int    getSubjectId() { return subjectId; }
+    public String getExamType()  { return examType; }
+    public Date   getExamDate()  { return examDate; }
+    public int    getMaxMarks()  { return maxMarks; }
 
-    // TODO: Getters and Setters
-
+    public void setExamId(int v)     { examId    = v; }
+    public void setSubjectId(int v)  { subjectId = v; }
+    public void setExamType(String v){ examType  = v; }
+    public void setExamDate(Date v)  { examDate  = v; }
+    public void setMaxMarks(int v)   { maxMarks  = v; }
 }

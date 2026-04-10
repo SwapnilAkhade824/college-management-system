@@ -1,45 +1,24 @@
 package com.college.model.academic;
 
-/**
- * ============================================
- * CLASS: Department
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'Department' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
 public class Department {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int    deptId;
+    private String deptName;
+    private String officeLocation;
+    private String phone;
 
     public Department() {}
+    public Department(int id, String name, String loc, String phone) {
+        this.deptId = id; this.deptName = name;
+        this.officeLocation = loc; this.phone = phone;
+    }
 
-    // TODO: Parameterized constructor
+    public int    getDeptId()         { return deptId; }
+    public String getDeptName()       { return deptName; }
+    public String getOfficeLocation() { return officeLocation; }
+    public String getPhone()          { return phone; }
 
-    // TODO: Getters and Setters
-
+    public void setDeptId(int v)          { deptId         = v; }
+    public void setDeptName(String v)     { deptName       = v; }
+    public void setOfficeLocation(String v){ officeLocation = v; }
+    public void setPhone(String v)        { phone          = v; }
 }

@@ -1,73 +1,86 @@
 package com.college.controller;
 
-import java.util.List;
+import com.college.core.DBConnection;
+import com.college.core.SessionManager;
+import com.college.dao.academic.StudentDAO;
+import com.college.dao.user.UserDAO;
+import com.college.model.academic.Student;
+import com.college.model.user.User;
+import com.college.util.Constants;
+import com.college.util.DemoData;
 
 /**
- * ============================================
- * CLASS: AuthController
- * ============================================
- *
- * PURPOSE:
- * This controller handles all business logic related to User.
- * It acts as a bridge between UI (Panels) and DAO layer.
- *
- * RESPONSIBILITIES:
- * - Validate user input
- * - Call DAO methods
- * - Process data before sending to UI
- *
- * USED BY:
- * - UserPanel (UI)
- *
- * DEPENDS ON:
- * - UserDAO
- * - User model
- *
- * ============================================
+ * Handles login and signup logic.
  */
 public class AuthController {
 
+    private final UserDAO    userDAO    = new UserDAO();
+    private final StudentDAO studentDAO = new StudentDAO();
+
     /**
-     * Create/Add User
-     * @param data (User object)
-     * @return boolean (true if success, false otherwise)
+     * Authenticates user.
+     * @return true on success; populates SessionManager.
      */
-    public boolean addUser(User data) {
-        return false;
+    public boolean login(String username, String password) {
+        // Demo mode fallback
+        if (DBConnection.isDemoMode()) {
+            if (Constants.DEMO_USER.equals(username) && Constants.DEMO_PASS.equals(password)) {
+                User u = DemoData.getUser();
+                SessionManager.setUser(u.getUserId(), u.getRole(), u.getUsername(), "Swapnil Akhade");
+                Student s = DemoData.getStudent();
+                SessionManager.setStudentId(s.getStudentId());
+                SessionManager.setCourseId(s.getCourseId());
+                return true;
+            }
+            return false;
+        }
+
+        User user = userDAO.findByUsername(username);
+        if (user == null) return false;
+        if (!user.getPassword().equals(password)) return false;
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) return false;
+
+        // Determine display name
+        String displayName = username;
+        if ("STUDENT".equalsIgnoreCase(user.getRole())) {
+            Student s = studentDAO.findByUserId(user.getUserId());
+            if (s != null) {
+                displayName = s.getFullName();
+                SessionManager.setStudentId(s.getStudentId());
+                SessionManager.setCourseId(s.getCourseId());
+            }
+        }
+
+        SessionManager.setUser(user.getUserId(), user.getRole(), username, displayName);
+        return true;
     }
 
     /**
-     * Update User
-     * @param data (User object with updated values)
-     * @return boolean
+     * Submits a signup request (stores User with INACTIVE status).
+     * @return true on success.
      */
-    public boolean updateUser(User data) {
-        return false;
+    public boolean requestAccount(String username, String password, String role) {
+        if (DBConnection.isDemoMode()) return false; // No-op in demo
+        User u = new User();
+        u.setUsername(username); u.setPassword(password);
+        u.setRole(role.toUpperCase()); u.setStatus("INACTIVE");
+        return userDAO.insert(u);
     }
 
     /**
-     * Soft Delete User
-     * @param id (primary key)
-     * @return boolean
+     * Changes password for current user.
      */
-    public boolean deleteUser(int id) {
-        return false;
+    public boolean changePassword(String oldPassword, String newPassword) {
+        if (DBConnection.isDemoMode()) {
+            return Constants.DEMO_PASS.equals(oldPassword);
+        }
+        User user = userDAO.findById(SessionManager.getUserId());
+        if (user == null || !user.getPassword().equals(oldPassword)) return false;
+        user.setPassword(newPassword);
+        return userDAO.update(user);
     }
 
-    /**
-     * Get User by ID
-     * @param id
-     * @return User object
-     */
-    public User getUserById(int id) {
-        return null;
-    }
-
-    /**
-     * Get all User records
-     * @return List<User>
-     */
-    public List<User> getAllUsers() {
-        return null;
+    public void logout() {
+        SessionManager.clear();
     }
 }

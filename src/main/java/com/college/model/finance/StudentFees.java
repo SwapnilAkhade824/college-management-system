@@ -1,45 +1,25 @@
 package com.college.model.finance;
 
-/**
- * ============================================
- * CLASS: StudentFees
- * ============================================
- *
- * PURPOSE:
- * Represents a single record from 'StudentFees' table.
- *
- * RESPONSIBILITIES:
- * - Store data from database
- * - Provide getters and setters
- *
- * USED BY:
- * - DAO layer (for DB mapping)
- * - Controller layer (for data transfer)
- *
- * RULES:
- * - No business logic
- * - No database code
- *
- * METHODS TO IMPLEMENT:
- * - Default constructor
- * - Parameterized constructor
- * - Getters and Setters
- * - toString() (optional)
- *
- * ============================================
- */
+import java.math.BigDecimal;
+
 public class StudentFees {
-
-    // TODO: Define fields based on DB schema
-
-    // Example:
-    // private int id;
-    // private String name;
+    private int        studentFeeId;
+    private int        studentId;
+    private int        feeId;
+    private BigDecimal paidAmount;
+    private String     status; // PAID | PENDING
 
     public StudentFees() {}
 
-    // TODO: Parameterized constructor
+    public int        getStudentFeeId(){ return studentFeeId; }
+    public int        getStudentId()   { return studentId; }
+    public int        getFeeId()       { return feeId; }
+    public BigDecimal getPaidAmount()  { return paidAmount; }
+    public String     getStatus()      { return status; }
 
-    // TODO: Getters and Setters
-
+    public void setStudentFeeId(int v)       { studentFeeId = v; }
+    public void setStudentId(int v)          { studentId    = v; }
+    public void setFeeId(int v)              { feeId        = v; }
+    public void setPaidAmount(BigDecimal v)  { paidAmount   = v; }
+    public void setStatus(String v)          { status       = v; }
 }
