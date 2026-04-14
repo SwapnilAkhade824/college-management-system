@@ -14,6 +14,7 @@ import java.awt.*;
  * Login Screen — matches reference design:
  * - Full-width header "College Management System"
  * - Left half: gray rounded card with "Request →" button on top
+ * - Center: 2px vertical black divider
  * - Right half: optional error panel, "Login" title, UserID, Password, "Login →" button
  */
 public class LoginPanel extends JPanel {
@@ -21,7 +22,6 @@ public class LoginPanel extends JPanel {
     private final JTextField     userField = new JTextField();
     private final JPasswordField passField = new JPasswordField();
     private final JLabel         msgLabel  = new JLabel(" ");
-    private final JPanel         msgPanel;
     private final AuthController auth      = new AuthController();
 
     public LoginPanel() {
@@ -34,50 +34,54 @@ public class LoginPanel extends JPanel {
         header.setPreferredSize(new Dimension(0, Constants.HEADER_H));
         header.setBorder(BorderFactory.createMatteBorder(0, 0, Constants.STROKE, 0, Color.BLACK));
         JLabel title = new JLabel("College Management System", SwingConstants.CENTER);
-        title.setFont(UITheme.bold(36f));
+        title.setFont(UITheme.bold(34f));
         title.setForeground(Color.BLACK);
         header.add(title, BorderLayout.CENTER);
         add(header, BorderLayout.NORTH);
 
-        // ── Body ───────────────────────────────────────────────────────────
-        JPanel body = new JPanel(new GridLayout(1, 2));
+        // ── Body: Left | Divider | Right ───────────────────────────────────
+        JPanel body = new JPanel(new BorderLayout());
         body.setBackground(Constants.BG);
-        body.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-        // LEFT: gray card with "Request" button
-        body.add(buildLeft());
-
-        // RIGHT: login form
-        body.add(buildRight());
+        body.add(buildLeft(),    BorderLayout.WEST);
+        body.add(buildDivider(), BorderLayout.CENTER);
+        body.add(buildRight(),   BorderLayout.EAST);
 
         add(body, BorderLayout.CENTER);
-        msgPanel = null; // initialized in buildRight
+    }
+
+    /** Vertical 2px black center divider. */
+    private JPanel buildDivider() {
+        JPanel div = new JPanel();
+        div.setBackground(Color.BLACK);
+        div.setPreferredSize(new Dimension(Constants.STROKE, 0));
+        return div;
     }
 
     private JPanel buildLeft() {
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(Constants.BG);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 20));
+        wrapper.setPreferredSize(new Dimension(Constants.W / 2, 0));
+        wrapper.setBorder(BorderFactory.createEmptyBorder(36, 40, 36, 20));
 
         RoundedPanel card = new RoundedPanel(Constants.CARD_COLOR, Constants.CARD_ARC);
         card.setLayout(new BorderLayout());
 
-        // "Request" button at top
+        // "Request" button at top-left
         ArrowButton reqBtn = new ArrowButton("Request");
-        reqBtn.setPreferredSize(new Dimension(220, 60));
-        JPanel topRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 16));
+        reqBtn.setPreferredSize(new Dimension(185, 60));
+        JPanel topRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 14));
         topRow.setOpaque(false);
         topRow.add(reqBtn);
-        card.add(topRow, BorderLayout.NORTH);
+        card.add(topRow, BorderLayout.SOUTH);
 
-        // Placeholder image area
+        // Placeholder center label
         JLabel placeholder = new JLabel("Design Picture", SwingConstants.CENTER);
         placeholder.setFont(UITheme.bold(20f));
-        placeholder.setForeground(new Color(0x888888));
+        placeholder.setForeground(new Color(0x777777));
         card.add(placeholder, BorderLayout.CENTER);
 
         reqBtn.addActionListener(e -> NavigationManager.getInstance().navigateTo(Constants.SIGNUP));
-
         wrapper.add(card, BorderLayout.CENTER);
         return wrapper;
     }
@@ -86,50 +90,47 @@ public class LoginPanel extends JPanel {
         JPanel wrapper = new JPanel();
         wrapper.setBackground(Constants.BG);
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
-        wrapper.setBorder(BorderFactory.createEmptyBorder(36, 20, 40, 40));
+        wrapper.setPreferredSize(new Dimension(Constants.W / 2, 0));
+        wrapper.setBorder(BorderFactory.createEmptyBorder(60, 28, 36, 40));
 
         // Error message panel (red outline, hidden by default)
-        JPanel errWrap = new JPanel(new BorderLayout());
-        errWrap.setBackground(Constants.BG);
-        errWrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-
-        RoundedOutlinePanel errPanel = new RoundedOutlinePanel(Constants.RED, 30, Constants.STROKE);
+        RoundedOutlinePanel errPanel = new RoundedOutlinePanel(Constants.RED, 28, Constants.STROKE);
         errPanel.setLayout(new BorderLayout());
-        msgLabel.setFont(UITheme.font(15f));
+        msgLabel.setFont(UITheme.font(16f));
         msgLabel.setForeground(Constants.RED);
         msgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        msgLabel.setText(" ");
         errPanel.add(msgLabel, BorderLayout.CENTER);
-        errPanel.setPreferredSize(new Dimension(0, 50));
+        errPanel.setMaximumSize(new Dimension(400, 48));
+        errPanel.setAlignmentX(CENTER_ALIGNMENT);
         errPanel.setVisible(false);
-
-        errWrap.add(errPanel, BorderLayout.CENTER);
-        wrapper.add(errWrap);
-        wrapper.add(Box.createVerticalStrut(16));
+        wrapper.add(errPanel);
+        wrapper.add(Box.createVerticalStrut(30));
 
         // "Login" title
-        JLabel loginLbl = makeLabel("Login", UITheme.bold(32f), SwingConstants.CENTER);
+        JLabel loginLbl = new JLabel("Login", SwingConstants.CENTER);
+        loginLbl.setFont(UITheme.bold(30f));
+        loginLbl.setForeground(Color.BLACK);
         loginLbl.setAlignmentX(CENTER_ALIGNMENT);
         wrapper.add(loginLbl);
-        wrapper.add(Box.createVerticalStrut(28));
+        wrapper.add(Box.createVerticalStrut(36));
 
         // UserID
         wrapper.add(makeFormRow("UserID:", userField));
-        wrapper.add(Box.createVerticalStrut(16));
+        wrapper.add(Box.createVerticalStrut(20));
 
         // Password
         wrapper.add(makeFormRow("Password:", passField));
-        wrapper.add(Box.createVerticalStrut(32));
+        wrapper.add(Box.createVerticalStrut(40));
 
         // Login button
         ArrowButton loginBtn = new ArrowButton("Login");
-        loginBtn.setPreferredSize(new Dimension(220, 60));
-        loginBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+        loginBtn.setPreferredSize(new Dimension(185, 60));
+        loginBtn.setMaximumSize(new Dimension(185, 60));
         loginBtn.setAlignmentX(CENTER_ALIGNMENT);
         wrapper.add(loginBtn);
 
         loginBtn.addActionListener(e -> doLogin(errPanel));
-
-        // Enter key
         passField.addActionListener(e -> doLogin(errPanel));
         userField.addActionListener(e -> passField.requestFocusInWindow());
 
@@ -165,28 +166,28 @@ public class LoginPanel extends JPanel {
     private JPanel makeFormRow(String labelText, JTextField field) {
         JPanel row = new JPanel(new GridBagLayout());
         row.setOpaque(false);
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        row.setPreferredSize(new Dimension(400, 60));
+        row.setMaximumSize(new Dimension(400, 60));
+        row.setAlignmentX(CENTER_ALIGNMENT);
 
         GridBagConstraints gc = new GridBagConstraints();
         gc.gridy = 0; gc.fill = GridBagConstraints.BOTH;
 
-        JLabel lbl = makeLabel(labelText, UITheme.bold(18f), SwingConstants.RIGHT);
-        gc.gridx = 0; gc.weightx = 0.35;
+        JLabel lbl = new JLabel(labelText, SwingConstants.RIGHT);
+        lbl.setFont(UITheme.bold(18f));
+        lbl.setForeground(Color.BLACK);
+        lbl.setPreferredSize(new Dimension(60, 0));
+        gc.gridx = 0; gc.weightx = 0.3;
         row.add(lbl, gc);
 
-        field.setFont(UITheme.font(16f));
+        field.setFont(UITheme.font(18f));
         field.setOpaque(false);
         field.setBorder(new RoundedBorder(Color.BLACK, Constants.FIELD_ARC, Constants.STROKE));
         field.setBackground(Constants.BG);
-        gc.gridx = 1; gc.weightx = 0.65; gc.insets = new Insets(0, 12, 0, 0);
+        field.setPreferredSize(new Dimension(0, 50));
+        gc.gridx = 1; gc.weightx = 0.7; gc.insets = new Insets(0, 10, 0, 0);
         row.add(field, gc);
 
         return row;
-    }
-
-    private JLabel makeLabel(String text, Font font, int align) {
-        JLabel l = new JLabel(text, align);
-        l.setFont(font); l.setForeground(Color.BLACK);
-        return l;
     }
 }

@@ -15,10 +15,11 @@ import java.awt.*;
 
 /**
  * Details screen — full student profile with Personal/Academic/Contact/Enrollment info.
+ * Avatar is a magenta rounded-rectangle with the AvatarButton-style mask icon.
  */
 public class DetailsPanel extends JPanel implements Refreshable {
 
-    private final StudentController ctrl = new StudentController();
+    private final StudentController ctrl   = new StudentController();
     private final Topbar            topbar = new Topbar();
 
     // Value labels
@@ -41,12 +42,8 @@ public class DetailsPanel extends JPanel implements Refreshable {
     public DetailsPanel() {
         setBackground(Constants.BG);
         setLayout(new BorderLayout());
-
         add(topbar, BorderLayout.NORTH);
-
-        // Sub-header
-        JPanel subHdr = buildSubHeader();
-        add(subHdr, BorderLayout.CENTER);
+        add(buildSubHeader(), BorderLayout.CENTER);
     }
 
     private JPanel buildSubHeader() {
@@ -60,13 +57,14 @@ public class DetailsPanel extends JPanel implements Refreshable {
         sub.setPreferredSize(new Dimension(0, Constants.SUB_H));
 
         JLabel titleLbl = new JLabel("Details:");
-        titleLbl.setFont(UITheme.bold(28f));
+        titleLbl.setFont(UITheme.bold(26f));
+        titleLbl.setForeground(Color.BLACK);
         titleLbl.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 0));
         sub.add(titleLbl, BorderLayout.WEST);
 
         BackButton back = new BackButton();
         back.addActionListener(e -> NavigationManager.getInstance().navigateBack());
-        JPanel rightSub = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 8));
+        JPanel rightSub = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 9));
         rightSub.setOpaque(false);
         rightSub.add(back);
         sub.add(rightSub, BorderLayout.EAST);
@@ -80,15 +78,17 @@ public class DetailsPanel extends JPanel implements Refreshable {
         JPanel content = new JPanel();
         content.setBackground(Constants.BG);
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
+        content.setBorder(BorderFactory.createEmptyBorder(24, 60, 30, 60));
 
-        // Avatar
-        JPanel avatarRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // Avatar — magenta rounded card matching reference
+        JPanel avatarRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         avatarRow.setOpaque(false);
-        JLabel avatar = new JLabel("👤");
-        avatar.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
+        avatarRow.setAlignmentX(LEFT_ALIGNMENT);
+
+        JPanel avatar = buildAvatarCard();
         avatarRow.add(avatar);
         content.add(avatarRow);
+        content.add(Box.createVerticalStrut(20));
 
         // Sections
         content.add(section("Personal Information",
@@ -104,15 +104,49 @@ public class DetailsPanel extends JPanel implements Refreshable {
             new JLabel[]{vEmail, vPhone, vAddress}));
 
         content.add(section("Enrollment Details",
-            new String[]{"Course", "Assigned Faculty", "Subjects"},
+            new String[]{"Enrolled Courses", "Assigned Faculty", "Subjects"},
             new JLabel[]{vCourse, vFaculty, vSubjects}));
 
         JScrollPane scroll = new JScrollPane(content);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.setBackground(Constants.BG);
         scroll.getViewport().setBackground(Constants.BG);
-        scroll.getVerticalScrollBar().setUnitIncrement(12);
+        scroll.getVerticalScrollBar().setUnitIncrement(14);
         return scroll;
+    }
+
+    /** Magenta rounded-rect avatar with mask icon, matching the Details reference image. */
+    private JPanel buildAvatarCard() {
+        JPanel card = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int w = getWidth(), h = getHeight();
+                // Magenta rounded rectangle
+                g2.setColor(Constants.MAGENTA);
+                g2.fillRoundRect(0, 0, w - 1, h - 1, 28, 28);
+                // Mask icon (shield body)
+                g2.setColor(Color.WHITE);
+                int pad = (int)(w * 0.16);
+                int sw  = w - 2 * pad;
+                int sh  = h - 2 * pad;
+                g2.fillRoundRect(pad, pad, sw, sh, sw / 3, sh / 4);
+                // Eyes
+                g2.setColor(Constants.MAGENTA);
+                int ew = sw / 5, eh = sh / 6;
+                int eyY = pad + sh * 2 / 5;
+                g2.fillOval(pad + sw / 4 - ew / 2, eyY, ew, eh);
+                g2.fillOval(pad + 3 * sw / 4 - ew / 2, eyY, ew, eh);
+                // Mouth
+                g2.setStroke(new BasicStroke(3f));
+                g2.drawArc(pad + sw / 4, eyY + eh + sh / 14, sw / 2, sh / 7, 0, -180);
+                g2.dispose();
+            }
+        };
+        card.setOpaque(false);
+        card.setPreferredSize(new Dimension(90, 90));
+        return card;
     }
 
     private JPanel section(String title, String[] labels, JLabel[] values) {
@@ -124,7 +158,8 @@ public class DetailsPanel extends JPanel implements Refreshable {
 
         // Section title
         JLabel hdr = new JLabel(title + ":");
-        hdr.setFont(UITheme.bold(19f)); hdr.setForeground(Color.BLACK);
+        hdr.setFont(UITheme.bold(18f));
+        hdr.setForeground(Color.BLACK);
         hdr.setAlignmentX(LEFT_ALIGNMENT);
         s.add(hdr);
 
@@ -133,28 +168,32 @@ public class DetailsPanel extends JPanel implements Refreshable {
         sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
         sep.setAlignmentX(LEFT_ALIGNMENT);
         s.add(sep);
-        s.add(Box.createVerticalStrut(8));
+        s.add(Box.createVerticalStrut(10));
 
-        // Rows
         for (int i = 0; i < labels.length; i++) {
             JPanel row = new JPanel(new GridLayout(1, 2, 12, 0));
             row.setOpaque(false);
-            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
             row.setAlignmentX(LEFT_ALIGNMENT);
 
-            JLabel k = new JLabel(labels[i] + ":"); k.setFont(UITheme.bold(15f));
+            JLabel k = new JLabel(labels[i] + ":", SwingConstants.RIGHT);
+            k.setFont(UITheme.bold(15f));
+            k.setForeground(Color.BLACK);
             values[i].setFont(UITheme.font(15f));
-            row.add(k); row.add(values[i]);
+            values[i].setForeground(Color.BLACK);
+            row.add(k);
+            row.add(values[i]);
             s.add(row);
-            s.add(Box.createVerticalStrut(4));
+            s.add(Box.createVerticalStrut(5));
         }
-        s.add(Box.createVerticalStrut(18));
+        s.add(Box.createVerticalStrut(16));
         return s;
     }
 
     private JLabel val() {
         JLabel l = new JLabel("--");
-        l.setFont(UITheme.font(15f)); l.setForeground(Color.BLACK);
+        l.setFont(UITheme.font(15f));
+        l.setForeground(Color.BLACK);
         return l;
     }
 

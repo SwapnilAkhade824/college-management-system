@@ -1,11 +1,9 @@
 package com.college.view.components;
 
 import com.college.util.Constants;
-import com.college.util.UITheme;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 /**
  * Circular magenta avatar button — top-right of all screens.
@@ -16,7 +14,7 @@ public class AvatarButton extends JButton {
 
     private static final Color BG   = Constants.MAGENTA;
     private static final Color FG   = Color.WHITE;
-    private static final int   SIZE = 60;
+    static final int SIZE = 56;
 
     public AvatarButton() {
         setPreferredSize(new Dimension(SIZE, SIZE));
@@ -34,27 +32,32 @@ public class AvatarButton extends JButton {
 
         // Magenta circle background
         g2.setColor(BG);
-        g2.fillOval(0, 0, w, h);
+        g2.fillOval(0, 0, w - 1, h - 1);
 
-        // Draw simple anonymous mask icon (shield + eyes)
+        // Mask icon — shield shape (rounded rect)
         g2.setColor(FG);
-        int pad = w / 5;
+        int pad = (int)(w * 0.18);
         int sw  = w - 2 * pad;
         int sh  = h - 2 * pad;
-        // Shield body (rounded rectangle as base)
-        g2.fillRoundRect(pad, pad, sw, sh, sw / 3, sw / 3);
+        int arcR = sw / 3;
+        g2.fillRoundRect(pad, pad, sw, sh, arcR, arcR);
 
-        // Cutouts (eyes/mask slits) — dark color
+        // Eye slit cutouts (magenta, so they become "holes")
         g2.setColor(BG);
-        int ew = sw / 4;
-        int eh = sh / 5;
-        int ey = pad + sh / 3;
-        g2.fillOval(pad + sw / 4 - ew / 2, ey, ew, eh);           // left eye
-        g2.fillOval(pad + 3 * sw / 4 - ew / 2, ey, ew, eh);       // right eye
-        // Mouth arc
-        g2.setStroke(new BasicStroke(2));
-        g2.setColor(BG);
-        g2.drawArc(pad + sw / 4, ey + eh + 2, sw / 2, sh / 6, 0, -180);
+        int ew = sw / 5;
+        int eh = sh / 6;
+        int eyY = pad + sh * 2 / 5;
+        // Left eye
+        g2.fillOval(pad + sw / 4 - ew / 2, eyY, ew, eh);
+        // Right eye
+        g2.fillOval(pad + 3 * sw / 4 - ew / 2, eyY, ew, eh);
+
+        // Mouth arc (open downward like a wink)
+        g2.setStroke(new BasicStroke(2.5f));
+        int mouthY = eyY + eh + (int)(sh * 0.10);
+        int mouthW = sw / 2;
+        int mouthH = sh / 7;
+        g2.drawArc(pad + sw / 4, mouthY, mouthW, mouthH, 0, -180);
 
         g2.dispose();
     }

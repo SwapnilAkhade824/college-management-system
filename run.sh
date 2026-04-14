@@ -31,3 +31,5 @@ echo "Starting app... (Demo login: student1 / password)"
 echo ""
 
 java -cp "$JAR;$CP" com.college.Main
+
+# java -cp "target/CollegeManagementSystem-1.0-SNAPSHOT.jar;target/lib/*" com.college.Main

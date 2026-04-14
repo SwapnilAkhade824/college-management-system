@@ -10,6 +10,7 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * Green pill button with a lighter circle on the right containing an arrow "→".
  * Matches the Figma "Login →" and "Request →" buttons exactly.
+ * All drawing is proportional to the button's actual dimensions.
  */
 public class ArrowButton extends JButton {
 
@@ -22,37 +23,48 @@ public class ArrowButton extends JButton {
         setContentAreaFilled(false);
         setBorderPainted(false);
         setForeground(Color.WHITE);
-        setFont(UITheme.bold(22f));
+        setFont(UITheme.bold(20f));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setHorizontalAlignment(SwingConstants.LEFT);
-        setMargin(new Insets(0, 28, 0, 0));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         int w = getWidth(), h = getHeight();
 
-        // Pill background
+        // Pill background (full width)
         g2.setColor(GREEN);
         g2.fill(new RoundRectangle2D.Float(0, 0, w, h, h, h));
 
-        // Right circle
-        int cs = h - 8, cx = w - cs - 4, cy = 4;
+        // Right circle — proportional: diameter = h - 10, 5px from right edge
+        int cs = h - 10;
+        int cx = w - cs - 5;
+        int cy = 5;
         g2.setColor(CIRCLE);
         g2.fillOval(cx, cy, cs, cs);
 
-        // Text
+        // Text label — left-padded at ~30% of height
         g2.setFont(getFont());
         g2.setColor(Color.WHITE);
         FontMetrics fm = g2.getFontMetrics();
+        int textWidth = fm.stringWidth(getText());
+        int textX = (cx - textWidth) / 2;
         int ty = (h - fm.getHeight()) / 2 + fm.getAscent();
-        g2.drawString(getText(), 28, ty);
+        g2.drawString(getText(), textX, ty);
 
-        // Arrow in circle
+        // DEBUG BORDERS
+        // g2.setColor(Color.YELLOW); g2.drawRect(0, 0, w-1, h-1);
+        // g2.setColor(Color.MAGENTA); g2.drawRect(0, 0, cx, h-1);
+        // g2.setColor(Color.RED); g2.drawRect(textX, ty - fm.getAscent(), textWidth, fm.getHeight());
+
+        // Arrow "→" centered inside circle
+        Font arrowFont = getFont().deriveFont(getFont().getSize2D() + 2f);
+        g2.setFont(arrowFont);
         g2.setColor(GREEN);
-        g2.setFont(getFont().deriveFont(getFont().getSize2D() + 4f));
         FontMetrics am = g2.getFontMetrics();
         String arrow = "→";
         int ax = cx + (cs - am.stringWidth(arrow)) / 2;

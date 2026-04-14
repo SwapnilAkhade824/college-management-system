@@ -9,25 +9,25 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- USERS
 -- ==============================
 INSERT INTO Users (user_id, username, password, role, status) VALUES
-(1,  'admin01',      '$2b$10$hashedpassword001', 'ADMIN',    'ACTIVE'),
-(2,  'admin02',      '$2b$10$hashedpassword002', 'ADMIN',    'ACTIVE'),
-(3,  'faculty_raj',  '$2b$10$hashedpassword003', 'FACULTY',  'ACTIVE'),
-(4,  'faculty_priya','$2b$10$hashedpassword004', 'FACULTY',  'ACTIVE'),
-(5,  'faculty_suresh','$2b$10$hashedpassword005','FACULTY',  'ACTIVE'),
-(6,  'faculty_meena','$2b$10$hashedpassword006', 'FACULTY',  'ACTIVE'),
-(7,  'faculty_arjun','$2b$10$hashedpassword007', 'FACULTY',  'INACTIVE'),
-(8,  'student_001',  '$2b$10$hashedpassword008', 'STUDENT',  'ACTIVE'),
-(9,  'student_002',  '$2b$10$hashedpassword009', 'STUDENT',  'ACTIVE'),
-(10, 'student_003',  '$2b$10$hashedpassword010', 'STUDENT',  'ACTIVE'),
-(11, 'student_004',  '$2b$10$hashedpassword011', 'STUDENT',  'ACTIVE'),
-(12, 'student_005',  '$2b$10$hashedpassword012', 'STUDENT',  'ACTIVE'),
-(13, 'student_006',  '$2b$10$hashedpassword013', 'STUDENT',  'ACTIVE'),
-(14, 'student_007',  '$2b$10$hashedpassword014', 'STUDENT',  'ACTIVE'),
-(15, 'student_008',  '$2b$10$hashedpassword015', 'STUDENT',  'ACTIVE'),
-(16, 'student_009',  '$2b$10$hashedpassword016', 'STUDENT',  'ACTIVE'),
-(17, 'student_010',  '$2b$10$hashedpassword017', 'STUDENT',  'INACTIVE'),
-(18, 'accounts_01',  '$2b$10$hashedpassword018', 'ACCOUNTS', 'ACTIVE'),
-(19, 'accounts_02',  '$2b$10$hashedpassword019', 'ACCOUNTS', 'ACTIVE');
+(1,  'admin01',      'password001', 'ADMIN',    'ACTIVE'),
+(2,  'admin02',      'password002', 'ADMIN',    'ACTIVE'),
+(3,  'faculty_raj',  'password003', 'FACULTY',  'ACTIVE'),
+(4,  'faculty_priya','password004', 'FACULTY',  'ACTIVE'),
+(5,  'faculty_suresh','password005','FACULTY',  'ACTIVE'),
+(6,  'faculty_meena','password006', 'FACULTY',  'ACTIVE'),
+(7,  'faculty_arjun','password007', 'FACULTY',  'INACTIVE'),
+(8,  'student_001',  'password008', 'STUDENT',  'ACTIVE'),
+(9,  'student_002',  'password009', 'STUDENT',  'ACTIVE'),
+(10, 'student_003',  'password010', 'STUDENT',  'ACTIVE'),
+(11, 'student_004',  'password011', 'STUDENT',  'ACTIVE'),
+(12, 'student_005',  'password012', 'STUDENT',  'ACTIVE'),
+(13, 'student_006',  'password013', 'STUDENT',  'ACTIVE'),
+(14, 'student_007',  'password014', 'STUDENT',  'ACTIVE'),
+(15, 'student_008',  'password015', 'STUDENT',  'ACTIVE'),
+(16, 'student_009',  'password016', 'STUDENT',  'ACTIVE'),
+(17, 'student_010',  'password017', 'STUDENT',  'INACTIVE'),
+(18, 'accounts_01',  'password018', 'ACCOUNTS', 'ACTIVE'),
+(19, 'accounts_02',  'password019', 'ACCOUNTS', 'ACTIVE');
 
 -- ==============================
 -- DEPARTMENT
