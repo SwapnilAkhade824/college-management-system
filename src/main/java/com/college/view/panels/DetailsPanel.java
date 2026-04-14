@@ -80,32 +80,21 @@ public class DetailsPanel extends JPanel implements Refreshable {
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBorder(BorderFactory.createEmptyBorder(24, 60, 30, 60));
 
-        // Avatar — magenta rounded card matching reference
-        JPanel avatarRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        avatarRow.setOpaque(false);
-        avatarRow.setAlignmentX(LEFT_ALIGNMENT);
-
-        JPanel avatar = buildAvatarCard();
-        avatarRow.add(avatar);
-        content.add(avatarRow);
-        content.add(Box.createVerticalStrut(20));
-
-        // Sections
         content.add(section("Personal Information",
-            new String[]{"UserID", "Name", "Date of Birth", "Gender"},
-            new JLabel[]{vUserId, vName, vDob, vGender}));
+            new String[]{"PhotoID", "UserID", "Name", "Date of Birth", "Gender"},
+            new JComponent[]{buildAvatarCard(), vUserId, vName, vDob, vGender}));
 
         content.add(section("Academic Information",
-            new String[]{"Year", "Semester", "Department", "Branch", "Backlogs"},
-            new JLabel[]{vYear, vSem, vDept, vBranch, vBacklog}));
+            new String[]{"Year", "Semester", "Department", "Branch", "Backlog"},
+            new JComponent[]{vYear, vSem, vDept, vBranch, vBacklog}));
 
         content.add(section("Contact Information",
             new String[]{"Email", "Phone", "Address"},
-            new JLabel[]{vEmail, vPhone, vAddress}));
+            new JComponent[]{vEmail, vPhone, vAddress}));
 
         content.add(section("Enrollment Details",
             new String[]{"Enrolled Courses", "Assigned Faculty", "Subjects"},
-            new JLabel[]{vCourse, vFaculty, vSubjects}));
+            new JComponent[]{vCourse, vFaculty, vSubjects}));
 
         JScrollPane scroll = new JScrollPane(content);
         scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -117,39 +106,54 @@ public class DetailsPanel extends JPanel implements Refreshable {
 
     /** Magenta rounded-rect avatar with mask icon, matching the Details reference image. */
     private JPanel buildAvatarCard() {
+        int w = 110, h = 110;
+        JPanel main = new JPanel(null);
+        main.setOpaque(false);
+        main.setPreferredSize(new Dimension(w, h));
+        main.setMinimumSize(new Dimension(w, h));
+        main.setMaximumSize(new Dimension(w, h));
+
+        // Base Magenta Card
         JPanel card = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                int w = getWidth(), h = getHeight();
-                // Magenta rounded rectangle
                 g2.setColor(Constants.MAGENTA);
-                g2.fillRoundRect(0, 0, w - 1, h - 1, 28, 28);
-                // Mask icon (shield body)
-                g2.setColor(Color.WHITE);
-                int pad = (int)(w * 0.16);
-                int sw  = w - 2 * pad;
-                int sh  = h - 2 * pad;
-                g2.fillRoundRect(pad, pad, sw, sh, sw / 3, sh / 4);
-                // Eyes
-                g2.setColor(Constants.MAGENTA);
-                int ew = sw / 5, eh = sh / 6;
-                int eyY = pad + sh * 2 / 5;
-                g2.fillOval(pad + sw / 4 - ew / 2, eyY, ew, eh);
-                g2.fillOval(pad + 3 * sw / 4 - ew / 2, eyY, ew, eh);
-                // Mouth
-                g2.setStroke(new BasicStroke(3f));
-                g2.drawArc(pad + sw / 4, eyY + eh + sh / 14, sw / 2, sh / 7, 0, -180);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                
+                // Avatar SVG
+                com.formdev.flatlaf.extras.FlatSVGIcon icon = new com.formdev.flatlaf.extras.FlatSVGIcon("icons/avatar.svg", (int)(getWidth()*0.7), (int)(getHeight()*0.7));
+                icon.paintIcon(this, g2, (getWidth()-icon.getIconWidth())/2, (getHeight()-icon.getIconHeight())/2);
                 g2.dispose();
             }
         };
+        card.setBounds(0, 0, w, h);
         card.setOpaque(false);
-        card.setPreferredSize(new Dimension(90, 90));
-        return card;
+        main.add(card);
+
+        // Edit Badge (Red rounded rect with change.svg)
+        JPanel badge = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Constants.RED);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                
+                com.formdev.flatlaf.extras.FlatSVGIcon icon = new com.formdev.flatlaf.extras.FlatSVGIcon("icons/change.svg", 12, 12);
+                icon.paintIcon(this, g2, (getWidth()-icon.getIconWidth())/2, (getHeight()-icon.getIconHeight())/2);
+                g2.dispose();
+            }
+        };
+        badge.setBounds(w - 28, h - 28, 24, 24);
+        badge.setOpaque(false);
+        main.add(badge);
+
+        return main;
     }
 
-    private JPanel section(String title, String[] labels, JLabel[] values) {
+    private JPanel section(String title, String[] labels, JComponent[] values) {
         JPanel s = new JPanel();
         s.setOpaque(false);
         s.setLayout(new BoxLayout(s, BoxLayout.Y_AXIS));
@@ -158,35 +162,52 @@ public class DetailsPanel extends JPanel implements Refreshable {
 
         // Section title
         JLabel hdr = new JLabel(title + ":");
-        hdr.setFont(UITheme.bold(18f));
+        hdr.setFont(UITheme.bold(22f));
         hdr.setForeground(Color.BLACK);
         hdr.setAlignmentX(LEFT_ALIGNMENT);
+        hdr.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
         s.add(hdr);
 
         JSeparator sep = new JSeparator();
-        sep.setForeground(new Color(0xAAAAAA));
+        sep.setForeground(new Color(0x777777));
         sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
         sep.setAlignmentX(LEFT_ALIGNMENT);
         s.add(sep);
-        s.add(Box.createVerticalStrut(10));
+        s.add(Box.createVerticalStrut(15));
 
         for (int i = 0; i < labels.length; i++) {
-            JPanel row = new JPanel(new GridLayout(1, 2, 12, 0));
+            JPanel row = new JPanel(new BorderLayout(24, 0));
             row.setOpaque(false);
-            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, values[i] instanceof JPanel ? 120 : 35));
             row.setAlignmentX(LEFT_ALIGNMENT);
 
             JLabel k = new JLabel(labels[i] + ":", SwingConstants.RIGHT);
-            k.setFont(UITheme.bold(15f));
+            k.setFont(UITheme.bold(18f));
             k.setForeground(Color.BLACK);
-            values[i].setFont(UITheme.font(15f));
+            k.setPreferredSize(new Dimension(180, 0));
+            
+            if (values[i] instanceof JLabel) {
+                values[i].setFont(UITheme.font(18f));
+                ((JLabel)values[i]).setHorizontalAlignment(SwingConstants.LEFT);
+            }
             values[i].setForeground(Color.BLACK);
-            row.add(k);
-            row.add(values[i]);
+            
+            row.add(k, BorderLayout.WEST);
+            
+            // For PhotoID, ensure TOP alignment
+            if (values[i] instanceof JPanel) {
+                JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+                wrapper.setOpaque(false);
+                wrapper.add(values[i]);
+                row.add(wrapper, BorderLayout.CENTER);
+            } else {
+                row.add(values[i], BorderLayout.CENTER);
+            }
+            
             s.add(row);
-            s.add(Box.createVerticalStrut(5));
+            s.add(Box.createVerticalStrut(8));
         }
-        s.add(Box.createVerticalStrut(16));
+        s.add(Box.createVerticalStrut(20));
         return s;
     }
 

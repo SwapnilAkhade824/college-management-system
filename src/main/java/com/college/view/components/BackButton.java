@@ -40,8 +40,8 @@ public class BackButton extends JButton {
         g2.setColor(Constants.RED);
         g2.fill(new RoundRectangle2D.Float(0, 0, w, h, h, h));
 
-        // Step 2: Draw the lighter circle on the left (on top of pill)
-        g2.setColor(RED_LIGHT);
+        // Step 2: Draw the white circle on the left (on top of pill)
+        g2.setColor(Color.WHITE);
         g2.fillOval(5, cy, cs, cs);
 
         // Step 3: Arrow "←" centered inside the circle
@@ -55,7 +55,7 @@ public class BackButton extends JButton {
 
         // Step 4: "Back" text to the right of the circle
         g2.setColor(Color.WHITE);
-        int tx = 5 + cs + 10;
+        int tx = 5 + cs + 14; // added more spacing
         g2.drawString("Back", tx, ay);
 
         g2.dispose();

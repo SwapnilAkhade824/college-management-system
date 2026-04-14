@@ -18,34 +18,33 @@ public class GaugePanel extends JPanel {
     private double  value    = -1;    // -1 = unknown ("--")
     private double  maxValue = 10;    // 10 for CGPA, 100 for %
     private String  label    = "";    // "CGPA" or "%"
+    private String  footer   = "";    // "Performance" or "Attendance"
     private boolean visible  = true;  // eye-toggle visibility
     
-    private final FlatSVGIcon eyeShow   = new FlatSVGIcon("icons/eye_show.svg", 32, 24);
-    private final FlatSVGIcon eyeHidden = new FlatSVGIcon("icons/eye_hidden.svg", 32, 24);
+    private final FlatSVGIcon eyeShow   = new FlatSVGIcon("icons/eye_show.svg", 25, 20);
+    private final FlatSVGIcon eyeHidden = new FlatSVGIcon("icons/eye_hidden.svg", 28, 23);
  
-    public GaugePanel(String label, double maxValue) {
+    public GaugePanel(String label, String footer, double maxValue) {
         this.label    = label;
+        this.footer   = footer;
         this.maxValue = maxValue;
         setOpaque(false);
-        setPreferredSize(new Dimension(220, 200));
+        setPreferredSize(new Dimension(180, 190));
  
         // Click anywhere to toggle visibility
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                // Only toggle if click is near the eye icon (top-right area)
-                int w = getWidth();
-                if (e.getX() > w - 50 && e.getY() < 50) {
+                // Toggle if click is in top right
+                if (e.getX() > getWidth() - 40 && e.getY() < 40) {
                     visible = !visible;
                     repaint();
                 }
             }
         });
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
  
     public void setValue(double v) { this.value = v; repaint(); }
-    public void setValueVisible(boolean b) { this.visible = b; repaint(); }
  
     @Override
     protected void paintComponent(Graphics g) {
@@ -55,35 +54,31 @@ public class GaugePanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
  
         int w = getWidth(), h = getHeight();
- 
-        // Balanced offsets for a spacious feel
         int cx = w / 2;
-        int cy = h / 2;
-        int dia = w - 46;
+        int dia = w - 40;
         int r = dia / 2;
         int ax = cx - r;
-        int ay = cy - r;
+        int ay = 30; // Push arc up slightly
  
-        // Elegant colored arc segments (red → orange → green)
-        g2.setStroke(new BasicStroke(14, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        
-        int segments = 120;
+        // Arc segments (Smooth Red -> Green)
+        g2.setStroke(new BasicStroke(16, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        int segments = 90;
         float sweep = 180f;
         float arcPerSeg = sweep / segments;
         
-        for (int i = 0; i <= segments; i++) {
+        for (int i = 0; i < segments; i++) {
             float pct = (float) i / segments;
             g2.setColor(interpolateColor(pct));
             int startAngle = (int)(180 - i * arcPerSeg);
-            g2.drawArc(ax, ay, dia, dia, startAngle, -(int)Math.ceil(arcPerSeg) - 1);
+            g2.drawArc(ax, ay, dia, dia, startAngle, -(int)Math.ceil(arcPerSeg));
         }
  
-        // Refined white dot indicator
+        // Indicator Dot
         if (value >= 0) {
             double pct   = Math.min(1.0, value / maxValue);
             double angle = Math.toRadians(180 - 180 * pct);
-            int ix = (int)(cx + (r) * Math.cos(angle));
-            int iy = (int)(cy - (r) * Math.sin(angle));
+            int ix = (int)(cx + r * Math.cos(angle));
+            int iy = (int)(ay + r - r * Math.sin(angle));
             
             g2.setColor(Color.WHITE);
             g2.fillOval(ix - 10, iy - 10, 20, 20);
@@ -91,59 +86,45 @@ public class GaugePanel extends JPanel {
             g2.fillOval(ix - 6, iy - 6, 12, 12);
         }
  
-        // Center value text
-        g2.setFont(UITheme.bold(24f));
+        // Center Value
+        g2.setFont(UITheme.bold(26f));
         g2.setColor(Color.BLACK);
         String valText = visible && value >= 0
             ? (maxValue == 100 ? String.format("%.0f", value) : String.format("%.2f", value))
             : "--";
+        if ("--".equals(valText)) g2.setFont(UITheme.bold(30f));
+        
         FontMetrics fm = g2.getFontMetrics();
-        int vx = cx - fm.stringWidth(valText) / 2;
-        int vy = cy - 14; 
-        g2.drawString(valText, vx, vy);
+        int ty = ay + r -10;
+        g2.drawString(valText, cx - fm.stringWidth(valText) / 2, ty);
  
-        // Sub-label (CGPA)
-        g2.setFont(UITheme.bold(16f));
-        g2.setColor(Color.BLACK);
+        // Center Sub-label (CGPA/%)
+        g2.setFont(UITheme.bold(14f));
         FontMetrics sm = g2.getFontMetrics();
-        g2.drawString(label, cx - sm.stringWidth(label) / 2, vy + 24);
+        g2.drawString(label, cx - sm.stringWidth(label) / 2, ty + 18);
  
-        // Performance label - positioned with enough breathing room
-        g2.setFont(UITheme.bold(24f));
-        g2.setColor(Color.BLACK);
+        // Footer Label (Performance/Attendance)
+        g2.setFont(UITheme.bold(22f));
         FontMetrics pm = g2.getFontMetrics();
-        g2.drawString("Performance", cx - pm.stringWidth("Performance") / 2, h - 35);
+        g2.drawString(footer, cx - pm.stringWidth(footer) / 2, h - 20);
  
-        // Eye icon — top right
+        // Eye Icon
         FlatSVGIcon icon = visible ? eyeShow : eyeHidden;
-        icon.paintIcon(this, g2, w - 36, 16);
- 
-        // DEBUG BORDERS
-        g2.setStroke(new BasicStroke(1));
-        g2.setColor(Color.YELLOW); g2.drawRect(0, 0, w-1, h-1); // Panel
-        g2.setColor(Color.MAGENTA); g2.drawRect(ax, ay, dia, dia); // Arc Box
-        g2.setColor(Color.RED);
-        g2.drawRect(vx, vy - fm.getAscent(), fm.stringWidth(valText), fm.getHeight()); // Value
-        g2.drawRect(cx - sm.stringWidth(label)/2, vy + 24 - sm.getAscent(), sm.stringWidth(label), sm.getHeight()); // CGPA
-        g2.drawRect(cx - pm.stringWidth("Performance")/2, h - 35 - pm.getAscent(), pm.stringWidth("Performance"), pm.getHeight()); // Performance
-        g2.setColor(Color.CYAN); 
-        g2.drawRect(w - 50, 0, 50, 50); // Icon Area
+        icon.paintIcon(this, g2, w - 30, 10);
  
         g2.dispose();
     }
  
     private Color interpolateColor(float t) {
-        // Red (0.0) -> Orange (0.4) -> Yellow (0.6) -> Green (1.0)
-        // Refined for a more vibrant, design-authentic look
-        if (t < 0.4f) {
-            float f = t / 0.4f;
-            return new Color(255, (int)(140 * f), 30);
-        } else if (t < 0.7f) {
-            float f = (t - 0.4f) / 0.3f;
-            return new Color((int)(255 - 100 * f), (int)(140 + 115 * f), 0);
+        // Red (0.0) -> Yellow (0.5) -> Green (1.0)
+        int r, g, b = 0;
+        if (t < 0.5f) {
+            r = 255;
+            g = (int)(255 * (t / 0.5f));
         } else {
-            float f = (t - 0.7f) / 0.3f;
-            return new Color((int)(155 * (1 - f)), 255, (int)(80 * f));
+            r = (int)(255 * (1.0f - (t - 0.5f) / 0.5f));
+            g = 255;
         }
+        return new Color(r, g, b);
     }
 }

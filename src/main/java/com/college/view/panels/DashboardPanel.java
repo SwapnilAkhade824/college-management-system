@@ -21,8 +21,8 @@ import java.util.List;
 public class DashboardPanel extends JPanel implements Refreshable {
  
     private final Topbar              topbar = new Topbar();
-    private final GaugePanel          cgpa   = new GaugePanel("CGPA",   10);
-    private final GaugePanel          att    = new GaugePanel("% Att.", 100);
+    private final GaugePanel          cgpa   = new GaugePanel("CGPA", "Performance", 10);
+    private final GaugePanel          att    = new GaugePanel("%",    "Attendance", 100);
     private final JPanel              notifList;
     private final JLabel              notifBadge;
     private final DashboardController ctrl   = new DashboardController();
@@ -39,10 +39,11 @@ public class DashboardPanel extends JPanel implements Refreshable {
  
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill   = GridBagConstraints.BOTH;
-        gc.insets = new Insets(6, 6, 6, 6);
+        gc.insets = new Insets(10, 10, 10, 10);
  
         // ── Row 0: CGPA | Attendance | Notification mini panel ──────────
         gc.gridy = 0; gc.weighty = 0.40;
+        gc.insets = new Insets(40, 8, 10, 8); // Extra top gap from header line
  
         gc.gridx = 0; gc.weightx = 0.25;
         body.add(wrapGauge(cgpa), gc);
@@ -61,7 +62,8 @@ public class DashboardPanel extends JPanel implements Refreshable {
         // ── Row 1: Details | Attendance ────────────────────────────────
         gc.gridy = 1; gc.weighty = 0.30;
         gc.gridx = 0; gc.weightx = 1.0; gc.gridwidth = 3;
-        JPanel row1 = new JPanel(new GridLayout(1, 2, 12, 0));
+        gc.insets = new Insets(35, 8, 10, 8); // Large gap between widgets and buttons
+        JPanel row1 = new JPanel(new GridLayout(1, 2, 20, 0));
         row1.setOpaque(false);
         row1.add(navCard("Details",    Constants.DETAILS));
         row1.add(navCard("Attendance", Constants.ATTENDANCE));
@@ -69,7 +71,8 @@ public class DashboardPanel extends JPanel implements Refreshable {
  
         // ── Row 2: Payments | Timetable ──────────────────────────────
         gc.gridy = 2; gc.gridx = 0; gc.gridwidth = 3;
-        JPanel row2 = new JPanel(new GridLayout(1, 2, 12, 0));
+        gc.insets = new Insets(10, 8, 10, 8);
+        JPanel row2 = new JPanel(new GridLayout(1, 2, 20, 0));
         row2.setOpaque(false);
         row2.add(navCard("Payments",  Constants.PAYMENT));
         row2.add(navCard("Timetable", Constants.TIMETABLE));
@@ -124,8 +127,8 @@ public class DashboardPanel extends JPanel implements Refreshable {
         hdr.add(left, BorderLayout.WEST);
  
         // Expand button
-        JButton expand = new JButton("⬌");
-        expand.setFont(UITheme.bold(16f));
+        JButton expand = new JButton(new com.formdev.flatlaf.extras.FlatSVGIcon("icons/expand.svg", 20, 20));
+        expand.setFont(UITheme.bold(20f));
         expand.setFocusPainted(false);
         expand.setContentAreaFilled(false);
         expand.setBorderPainted(false);
@@ -136,8 +139,14 @@ public class DashboardPanel extends JPanel implements Refreshable {
  
         card.add(hdr, BorderLayout.NORTH);
  
-        JSeparator sep = new JSeparator();
-        sep.setForeground(new Color(0xAAAAAA));
+        JPanel sep = new JPanel() {
+            @Override protected void paintComponent(Graphics g) {
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, getWidth(), 3);
+            }
+        };
+        sep.setPreferredSize(new Dimension(0, 3));
+        sep.setOpaque(false);
         card.add(sep, BorderLayout.CENTER);
  
         notifList.removeAll();
@@ -153,11 +162,12 @@ public class DashboardPanel extends JPanel implements Refreshable {
  
     private JPanel navCard(String label, String card) {
         RoundedPanel p = new RoundedPanel(Constants.CARD_COLOR, Constants.CARD_ARC);
+        p.setPreferredSize(new Dimension(0, 100)); // Ensure tall buttons
         p.setLayout(new BorderLayout());
         p.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
  
         JLabel lbl = new JLabel(label, SwingConstants.CENTER);
-        lbl.setFont(UITheme.bold(24f));
+        lbl.setFont(UITheme.bold(26f));
         lbl.setForeground(Color.BLACK);
         p.add(lbl, BorderLayout.CENTER);
  
@@ -183,19 +193,45 @@ public class DashboardPanel extends JPanel implements Refreshable {
  
         notifList.removeAll();
         List<Notification> recent = ctrl.getRecentNotifications(3);
+        int i = 0;
         for (Notification n : recent) {
-            JPanel row = new JPanel(new BorderLayout(8, 0));
-            row.setOpaque(false);
-            row.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-            JLabel icon = new JLabel("ALERT".equals(n.getType()) ? "⚠" : "📢");
-            icon.setFont(UITheme.font(15f));
-            JLabel msg = new JLabel(n.getMessage().length() > 55
-                    ? n.getMessage().substring(0, 52) + "..." : n.getMessage());
-            msg.setFont(UITheme.font(13f));
-            msg.setForeground(Color.BLACK);
-            row.add(icon, BorderLayout.WEST);
-            row.add(msg,  BorderLayout.CENTER);
-            notifList.add(row);
+            JPanel item = new JPanel(new BorderLayout(12, 0));
+            item.setOpaque(false);
+            item.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+            
+            // Icon: alert.svg for alerts, notification_date.svg for others
+            String iconPath = "ALERT".equals(n.getType()) ? "icons/alert.svg" : "icons/notification_date.svg";
+            JLabel iconLabel = new JLabel(new com.formdev.flatlaf.extras.FlatSVGIcon(iconPath, 36, 36));
+            item.add(iconLabel, BorderLayout.WEST);
+ 
+            // Message: real text with truncation
+            String rawMsg = n.getMessage();
+            String truncated = rawMsg.length() > 55 ? rawMsg.substring(0, 52) + "..." : rawMsg;
+            JLabel msgLbl = new JLabel(truncated);
+            msgLbl.setFont(UITheme.font(14f));
+            msgLbl.setForeground(Color.BLACK);
+            item.add(msgLbl, BorderLayout.CENTER);
+ 
+            notifList.add(item);
+ 
+            // Dashed Separator
+            final boolean isLast = (++i == recent.size());
+            if (!isLast) {
+                JPanel dashedSep = new JPanel() {
+                    @Override protected void paintComponent(Graphics g) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(Color.BLACK);
+                        float[] dash = {4f, 4f};
+                        g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, dash, 0));
+                        g2.drawLine(0, 0, getWidth(), 0);
+                        g2.dispose();
+                    }
+                };
+                dashedSep.setPreferredSize(new Dimension(0, 1));
+                dashedSep.setOpaque(false);
+                notifList.add(dashedSep);
+            }
         }
         notifList.revalidate();
         notifList.repaint();
