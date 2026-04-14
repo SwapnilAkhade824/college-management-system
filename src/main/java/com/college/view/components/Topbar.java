@@ -4,6 +4,7 @@ import com.college.core.NavigationManager;
 import com.college.util.Constants;
 import com.college.util.UITheme;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import javax.swing.*;
 import java.awt.*;
 
@@ -15,8 +16,11 @@ import java.awt.*;
  */
 public class Topbar extends JPanel {
 
-    private final JLabel       welcomeLabel = new JLabel();
-    private final AvatarButton avatar       = new AvatarButton();
+    private final JPanel       welcomeWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    private final JLabel       welcomePrefix  = new JLabel("Welcome ");
+    private final JLabel       iconLabel      = new JLabel();
+    private final JLabel       welcomeName    = new JLabel();
+    private final AvatarButton avatar         = new AvatarButton();
 
     public Topbar() {
         setBackground(Constants.BG);
@@ -24,11 +28,24 @@ public class Topbar extends JPanel {
         setBorder(BorderFactory.createMatteBorder(0, 0, Constants.STROKE, 0, Color.BLACK));
         setLayout(new BorderLayout());
 
-        // Welcome label (left), vertically centered
-        welcomeLabel.setFont(UITheme.bold(30f));
-        welcomeLabel.setForeground(Color.BLACK);
-        welcomeLabel.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 0));
-        add(welcomeLabel, BorderLayout.CENTER);
+        // Welcome wrapper (left), vertically centered
+        welcomeWrapper.setOpaque(false);
+        welcomeWrapper.setBorder(BorderFactory.createEmptyBorder(25, 24, 0, 0));
+        
+        welcomePrefix.setFont(UITheme.bold(30f));
+        welcomePrefix.setForeground(Color.BLACK);
+        
+        iconLabel.setIcon(new FlatSVGIcon("icons/hand_shake.svg", 40, 40));
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 12));
+        
+        welcomeName.setFont(UITheme.bold(30f));
+        welcomeName.setForeground(Color.BLACK);
+        
+        welcomeWrapper.add(welcomePrefix);
+        welcomeWrapper.add(iconLabel);
+        welcomeWrapper.add(welcomeName);
+        
+        add(welcomeWrapper, BorderLayout.CENTER);
 
         // Avatar (right) — FlowLayout with computed vgap for vertical centering
         int vgap = (Constants.HEADER_H - AvatarButton.SIZE) / 2;
@@ -45,7 +62,7 @@ public class Topbar extends JPanel {
     }
 
     public void setName(String displayName) {
-        welcomeLabel.setText("Welcome \uD83D\uDC4B " + displayName + "!");
+        welcomeName.setText(displayName + "!");
     }
 
     private JPopupMenu buildMenu() {

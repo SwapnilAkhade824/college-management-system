@@ -1,5 +1,5 @@
 package com.college.view.panels;
-
+ 
 import com.college.controller.DashboardController;
 import com.college.core.NavigationManager;
 import com.college.core.Refreshable;
@@ -7,66 +7,66 @@ import com.college.model.system.Notification;
 import com.college.util.Constants;
 import com.college.util.UITheme;
 import com.college.view.components.*;
-
+ 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.List;
-
+ 
 /**
  * Dashboard — main hub screen:
  * Topbar → CGPA gauge | Attendance gauge | Mini Notification panel
  *        → 4 nav buttons: Details, Attendance, Payments, Timetable
  */
 public class DashboardPanel extends JPanel implements Refreshable {
-
+ 
     private final Topbar              topbar = new Topbar();
     private final GaugePanel          cgpa   = new GaugePanel("CGPA",   10);
     private final GaugePanel          att    = new GaugePanel("% Att.", 100);
     private final JPanel              notifList;
     private final JLabel              notifBadge;
     private final DashboardController ctrl   = new DashboardController();
-
+ 
     public DashboardPanel() {
         setBackground(Constants.BG);
         setLayout(new BorderLayout());
-
+ 
         add(topbar, BorderLayout.NORTH);
-
+ 
         JPanel body = new JPanel(new GridBagLayout());
         body.setBackground(Constants.BG);
         body.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
-
+ 
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill   = GridBagConstraints.BOTH;
         gc.insets = new Insets(6, 6, 6, 6);
-
+ 
         // ── Row 0: CGPA | Attendance | Notification mini panel ──────────
-        gc.gridy = 0; gc.weighty = 0.44;
-
-        gc.gridx = 0; gc.weightx = 0.22;
-        body.add(wrapGauge(cgpa, "Performance"), gc);
-
-        gc.gridx = 1; gc.weightx = 0.22;
-        body.add(wrapGauge(att, "Attendance"), gc);
-
+        gc.gridy = 0; gc.weighty = 0.40;
+ 
+        gc.gridx = 0; gc.weightx = 0.25;
+        body.add(wrapGauge(cgpa), gc);
+ 
+        gc.gridx = 1; gc.weightx = 0.25;
+        body.add(wrapGauge(att), gc);
+ 
         notifList  = new JPanel();
         notifList.setOpaque(false);
         notifList.setLayout(new BoxLayout(notifList, BoxLayout.Y_AXIS));
         notifBadge = new JLabel("0");
-
-        gc.gridx = 2; gc.weightx = 0.56;
+ 
+        gc.gridx = 2; gc.weightx = 0.50;
         body.add(buildMiniNotif(), gc);
-
+ 
         // ── Row 1: Details | Attendance ────────────────────────────────
-        gc.gridy = 1; gc.weighty = 0.28;
+        gc.gridy = 1; gc.weighty = 0.30;
         gc.gridx = 0; gc.weightx = 1.0; gc.gridwidth = 3;
         JPanel row1 = new JPanel(new GridLayout(1, 2, 12, 0));
         row1.setOpaque(false);
         row1.add(navCard("Details",    Constants.DETAILS));
         row1.add(navCard("Attendance", Constants.ATTENDANCE));
         body.add(row1, gc);
-
+ 
         // ── Row 2: Payments | Timetable ──────────────────────────────
         gc.gridy = 2; gc.gridx = 0; gc.gridwidth = 3;
         JPanel row2 = new JPanel(new GridLayout(1, 2, 12, 0));
@@ -74,39 +74,34 @@ public class DashboardPanel extends JPanel implements Refreshable {
         row2.add(navCard("Payments",  Constants.PAYMENT));
         row2.add(navCard("Timetable", Constants.TIMETABLE));
         body.add(row2, gc);
-
+ 
         add(body, BorderLayout.CENTER);
     }
-
-    private JPanel wrapGauge(GaugePanel gauge, String title) {
+ 
+    private JPanel wrapGauge(GaugePanel gauge) {
         RoundedPanel card = new RoundedPanel(Constants.CARD_COLOR, Constants.CARD_ARC);
-        card.setLayout(new BorderLayout(0, 4));
-        card.setBorder(BorderFactory.createEmptyBorder(12, 8, 12, 8));
-
-        JLabel lbl = new JLabel(title, SwingConstants.CENTER);
-        lbl.setFont(UITheme.bold(15f));
-        lbl.setForeground(Color.BLACK);
-        card.add(lbl, BorderLayout.NORTH);
+        card.setLayout(new BorderLayout());
+        card.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         card.add(gauge, BorderLayout.CENTER);
         return card;
     }
-
+ 
     private JPanel buildMiniNotif() {
         RoundedPanel card = new RoundedPanel(Constants.CARD_COLOR, Constants.CARD_ARC);
         card.setLayout(new BorderLayout(0, 6));
         card.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
-
+ 
         // Header row: title + count badge + expand button
         JPanel hdr = new JPanel(new BorderLayout());
         hdr.setOpaque(false);
-
+ 
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         left.setOpaque(false);
         JLabel titleLbl = new JLabel("Notification/Alert");
         titleLbl.setFont(UITheme.bold(16f));
         titleLbl.setForeground(Color.BLACK);
         left.add(titleLbl);
-
+ 
         // Red count badge
         JLabel badge = new JLabel("0") {
             @Override protected void paintComponent(Graphics g) {
@@ -125,9 +120,9 @@ public class DashboardPanel extends JPanel implements Refreshable {
         badge.setPreferredSize(new Dimension(22, 22));
         badge.setOpaque(false);
         left.add(badge);
-
+ 
         hdr.add(left, BorderLayout.WEST);
-
+ 
         // Expand button
         JButton expand = new JButton("⬌");
         expand.setFont(UITheme.bold(16f));
@@ -138,34 +133,34 @@ public class DashboardPanel extends JPanel implements Refreshable {
         expand.setForeground(Color.BLACK);
         expand.addActionListener(e -> NavigationManager.getInstance().navigateTo(Constants.NOTIFICATION));
         hdr.add(expand, BorderLayout.EAST);
-
+ 
         card.add(hdr, BorderLayout.NORTH);
-
+ 
         JSeparator sep = new JSeparator();
         sep.setForeground(new Color(0xAAAAAA));
         card.add(sep, BorderLayout.CENTER);
-
+ 
         notifList.removeAll();
         card.add(notifList, BorderLayout.SOUTH);
-
+ 
         // Sync internal badge reference
         notifBadge.setText("0");
         // Keep badge in sync on refresh via stash
         badge.setText(notifBadge.getText());
-
+ 
         return card;
     }
-
+ 
     private JPanel navCard(String label, String card) {
         RoundedPanel p = new RoundedPanel(Constants.CARD_COLOR, Constants.CARD_ARC);
         p.setLayout(new BorderLayout());
         p.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
+ 
         JLabel lbl = new JLabel(label, SwingConstants.CENTER);
         lbl.setFont(UITheme.bold(24f));
         lbl.setForeground(Color.BLACK);
         p.add(lbl, BorderLayout.CENTER);
-
+ 
         p.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override public void mouseClicked(java.awt.event.MouseEvent e) {
                 NavigationManager.getInstance().navigateTo(card);
@@ -179,13 +174,13 @@ public class DashboardPanel extends JPanel implements Refreshable {
         });
         return p;
     }
-
+ 
     @Override
     public void refresh() {
         topbar.setName(ctrl.getWelcomeName());
         cgpa.setValue(ctrl.getCGPA());
         att.setValue(ctrl.getAttendancePct());
-
+ 
         notifList.removeAll();
         List<Notification> recent = ctrl.getRecentNotifications(3);
         for (Notification n : recent) {
